@@ -1,0 +1,6 @@
+{
+  "name": "Espresso & Co. Boutique",
+  "description": "An exquisite artisanal Coffee House & Sweets boutique featuring freshly-brewed lattes, hand-glazed brioche donuts, an interactive custom donut designer, and a premium checkout experience.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
