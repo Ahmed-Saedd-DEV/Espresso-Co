@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('../utils/jwt');
 
 exports.registerUser = async (userData) => {
-    const { email, password, name, role } = userData;
+    const { email, password, name } = userData;
     const hashedPassword = await bcrypt.hash(password, 10);
     const emailExists = await prisma.user.findUnique({ where: { email } });
     if (emailExists) {
@@ -13,8 +13,7 @@ exports.registerUser = async (userData) => {
         data: {
             email,
             password: hashedPassword,
-            name,
-            role: role || 'user'
+            name
         }
     });
     return { message: 'User registered successfully', user: { name: existingUser.name, email: existingUser.email } };
