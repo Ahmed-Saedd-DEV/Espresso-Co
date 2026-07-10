@@ -38,10 +38,21 @@ model Product {
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
+  categoryId    Int?
+  category      Category? @relation(fields: [categoryId], references: [id])
 
   cartItems  CartProduct[]
   orderItems OrderItem[]
   reviews    Review[]
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
 }
 
 model Cart {

@@ -6,6 +6,7 @@ const productsRouters = require('./routes/productsRouters');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 app.use(express.json());
 app.use('/auth', authRoutes);
@@ -13,6 +14,7 @@ app.use('/products', productsRouters);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use('/reviews', reviewRoutes);
+app.use('/categories', categoryRoutes);
 
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
