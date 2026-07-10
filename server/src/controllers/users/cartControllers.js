@@ -1,4 +1,4 @@
-const cartService = require('../services/cartServices');
+const cartService = require('../../services/user/cartServices');
 
 exports.getCart = async (req, res) => {
     try {

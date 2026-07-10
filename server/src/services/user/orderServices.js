@@ -1,4 +1,4 @@
-const prisma = require('../prisma/prismaClient');
+const prisma = require('../../prisma/prismaClient');
 
 const createOrder = async (orderData, userId) => {
     let items = orderData.orderItems || orderData.items;

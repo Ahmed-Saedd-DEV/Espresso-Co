@@ -1,22 +1,4 @@
-const categoryService = require('../services/categoryServices');
-
-exports.getCategories = async (req, res) => {
-    try {
-        const categories = await categoryService.getCategories();
-        res.json(categories);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.getCategoryById = async (req, res) => {
-    try {
-        const category = await categoryService.getCategoryById(req.params.id);
-        res.json(category);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
-};
+const categoryService = require('../../services/admin/categoryServicesAdmin');
 
 exports.createCategory = async (req, res) => {
     try {
@@ -46,8 +28,6 @@ exports.deleteCategory = async (req, res) => {
 };
 
 module.exports = {
-    getCategories: exports.getCategories,
-    getCategoryById: exports.getCategoryById,
     createCategory: exports.createCategory,
     updateCategory: exports.updateCategory,
     deleteCategory: exports.deleteCategory
