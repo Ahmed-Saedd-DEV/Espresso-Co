@@ -13,7 +13,8 @@ exports.registerUser = async (userData) => {
         data: {
             email,
             password: hashedPassword,
-            name
+            name,
+            role: 'USER'  // Assigning default role as USER
         }
     });
     return { message: 'User registered successfully', user: { name: existingUser.name, email: existingUser.email } };
