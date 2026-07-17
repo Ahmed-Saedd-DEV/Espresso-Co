@@ -62,6 +62,12 @@ exports.logoutUser = async (req, res) => {
     }
 
     await authServices.logoutUser(userId);
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
     res.json({ message: "Logout successful" });
   } catch (error) {
     res.status(400).json({ error: error.message });
