@@ -2,6 +2,13 @@ const prisma = require("../prisma/prismaClient");
 const bcrypt = require("bcrypt");
 const jwt = require("../utils/jwt");
 const { buildAccessTokenPayload } = require("../utils/authUtils");
+const {
+  createEmailVerificationToken,
+} = require("../security/emailVerificationToken");
+const { sendVerificationEmail } = require("./mail.service");
+
+const EMAIL_VERIFICATION_ERROR_MESSAGE =
+  "Invalid or expired verification token";
 
 exports.registerUser = async (userData) => {
   const { email, password, name } = userData;
@@ -10,6 +17,7 @@ exports.registerUser = async (userData) => {
   if (emailExists) {
     throw new Error("Email already exists");
   }
+
   const existingUser = await prisma.user.create({
     data: {
       email,
@@ -18,10 +26,86 @@ exports.registerUser = async (userData) => {
       role: "USER",
     },
   });
+
+  const emailVerificationToken = await createEmailVerificationToken(
+    existingUser.id,
+  );
+  await sendVerificationEmail(existingUser.email, emailVerificationToken);
+
   return {
-    message: "User registered successfully",
+    message: "User registered successfully. Please verify your email.",
     user: { name: existingUser.name, email: existingUser.email },
   };
+};
+
+exports.verifyEmail = async (token) => {
+  try {
+    const payload = jwt.verifyEmailVerificationToken(token);
+    const storedToken = await prisma.emailVerificationToken.findUnique({
+      where: { userId: payload.id },
+    });
+
+    if (
+      !storedToken ||
+      !storedToken.expiresAt ||
+      storedToken.expiresAt < new Date()
+    ) {
+      throw new Error(EMAIL_VERIFICATION_ERROR_MESSAGE);
+    }
+
+    if (!storedToken.jti || storedToken.jti !== payload.jti) {
+      throw new Error(EMAIL_VERIFICATION_ERROR_MESSAGE);
+    }
+
+    const isMatch = await bcrypt.compare(token, storedToken.tokenHash);
+    if (!isMatch) {
+      throw new Error(EMAIL_VERIFICATION_ERROR_MESSAGE);
+    }
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: payload.id },
+        data: { isVerified: true },
+      }),
+      prisma.emailVerificationToken.delete({
+        where: { userId: payload.id },
+      }),
+    ]);
+
+    return { message: "Email verified successfully" };
+  } catch (error) {
+    throw new Error(EMAIL_VERIFICATION_ERROR_MESSAGE);
+  }
+};
+
+exports.resendVerificationEmail = async (userId) => {
+  const parsedUserId = Number(userId);
+
+  if (!Number.isInteger(parsedUserId)) {
+    throw new Error("Valid user ID is required");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: parsedUserId },
+    select: { id: true, email: true, isVerified: true },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.isVerified) {
+    throw new Error("Email is already verified");
+  }
+
+  await prisma.emailVerificationToken.deleteMany({
+    where: { userId: parsedUserId },
+  });
+
+  const newToken = await createEmailVerificationToken(parsedUserId);
+  await sendVerificationEmail(user.email, newToken);
+
+  return { message: "Verification email resent successfully" };
 };
 
 exports.loginUser = async (userData) => {

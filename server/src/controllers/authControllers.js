@@ -10,6 +10,38 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res
+        .status(400)
+        .json({ message: "Verification token is required" });
+    }
+
+    const result = await authServices.verifyEmail(token);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.resendVerificationEmail = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const result = await authServices.resendVerificationEmail(userId);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 exports.loginUser = async (req, res) => {
   try {
     const result = await authServices.loginUser(req.body);
@@ -76,6 +108,8 @@ exports.logoutUser = async (req, res) => {
 
 module.exports = {
   registerUser: exports.registerUser,
+  verifyEmail: exports.verifyEmail,
+  resendVerificationEmail: exports.resendVerificationEmail,
   loginUser: exports.loginUser,
   refreshToken: exports.refreshToken,
   getProfile: exports.getProfile,
