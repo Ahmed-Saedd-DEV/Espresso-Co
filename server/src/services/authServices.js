@@ -66,6 +66,21 @@ exports.verifyEmail = async (token) => {
 };
 
 
+exports.resendVerificationEmail = async (email) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    return { message: "If an account exists and is not verified, a verification email has been sent." };
+  }
+  if (user.isVerified) {
+    throw new Error("Email is already verified");
+  }
+  await prisma.emailVerificationToken.deleteMany({ where: { userId: user.id } });
+  const emailVerificationToken = await createEmailVerificationToken(user.id);
+  await sendVerificationEmail(user.email, emailVerificationToken);
+
+  return { message: "Verification email sent successfully" };
+};
+
 exports.loginUser = async (userData) => {
   const { email, password } = userData;
   const user = await prisma.user.findUnique({ where: { email } });
@@ -198,6 +213,7 @@ exports.logoutUser = async (userId) => {
 module.exports = {
   registerUser: exports.registerUser,
   verifyEmail: exports.verifyEmail,
+  resendVerificationEmail: exports.resendVerificationEmail,
   loginUser: exports.loginUser,
   refreshToken: exports.refreshToken,
   getProfile: exports.getProfile,

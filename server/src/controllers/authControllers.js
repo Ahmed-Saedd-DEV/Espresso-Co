@@ -27,6 +27,18 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
+exports.resendVerificationEmail = async (req, res) => {
+  try {
+    const result = await authServices.resendVerificationEmail(req.body.email);
+
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    });
+  }
+};
+
 exports.loginUser = async (req, res) => {
   try {
     const result = await authServices.loginUser(req.body);
