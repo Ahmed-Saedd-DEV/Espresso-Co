@@ -27,21 +27,6 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
-exports.resendVerificationEmail = async (req, res) => {
-  try {
-    const userId = req.user?.id;
-
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
-
-    const result = await authServices.resendVerificationEmail(userId);
-    res.json(result);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
 exports.loginUser = async (req, res) => {
   try {
     const result = await authServices.loginUser(req.body);
