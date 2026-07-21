@@ -44,6 +44,23 @@ const verifyEmailVerificationToken = (token) => {
   return jwt.verify(token, process.env.JWT_EMAIL_VERIFICATION_SECRET);
 };
 
+const generatePasswordResetToken = (user) => {
+  const jti = randomUUID();
+
+  const token = jwt.sign(
+    { id: user.id, jti },
+    process.env.JWT_PASSWORD_RESET_SECRET,
+    {
+      expiresIn: "1h",
+    }
+  );
+
+  return { token, jti, expiresAt: new Date(Date.now() + 60 * 60 * 1000) }; // 1 hour
+};
+
+const verifyPasswordResetToken = (token) => {
+  return jwt.verify(token, process.env.JWT_PASSWORD_RESET_SECRET);
+};
 
 module.exports = {
   accessToken,
@@ -52,4 +69,6 @@ module.exports = {
   verifyRefreshToken,
   generateEmailVerificationToken,
   verifyEmailVerificationToken,
+  generatePasswordResetToken,
+  verifyPasswordResetToken,
 };

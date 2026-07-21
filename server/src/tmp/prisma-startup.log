@@ -1,0 +1,3 @@
+2026-07-21T01:13:08.139Z PRISMA STARTUP PID=18400 CWD=D:\My Projects\work\Espresso\server DB_NAME=espressoandco DATABASE_URL=postgresql://admin:****@localhost:5432/espressoandco?schema=public
+2026-07-21T01:13:13.933Z PRISMA STARTUP PID=14268 CWD=D:\My Projects\work\Espresso\server DB_NAME=espressoandco DATABASE_URL=postgresql://admin:****@localhost:5432/espressoandco?schema=public
+2026-07-21T01:14:02.376Z PRISMA STARTUP PID=11088 CWD=D:\My Projects\work\Espresso\server DB_NAME=espressoandco DATABASE_URL=postgresql://admin:****@localhost:5432/espressoandco?schema=public

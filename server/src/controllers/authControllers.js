@@ -39,6 +39,34 @@ exports.resendVerificationEmail = async (req, res) => {
   }
 };
 
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+    const result = await authServices.forgotPassword(email);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    const result = await authServices.resetPassword(token, newPassword);
+    res.json(result);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 exports.loginUser = async (req, res) => {
   try {
     const result = await authServices.loginUser(req.body);
@@ -107,6 +135,8 @@ module.exports = {
   registerUser: exports.registerUser,
   verifyEmail: exports.verifyEmail,
   resendVerificationEmail: exports.resendVerificationEmail,
+  forgotPassword: exports.forgotPassword,
+  resetPassword: exports.resetPassword,
   loginUser: exports.loginUser,
   refreshToken: exports.refreshToken,
   getProfile: exports.getProfile,

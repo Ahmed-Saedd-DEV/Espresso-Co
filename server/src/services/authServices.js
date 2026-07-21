@@ -2,10 +2,9 @@ const prisma = require("../prisma/prismaClient");
 const bcrypt = require("bcrypt");
 const jwt = require("../utils/jwt");
 const { buildAccessTokenPayload } = require("../utils/authUtils");
-const {
-  createEmailVerificationToken,
-} = require("../security/emailVerificationToken");
-const { sendVerificationEmail } = require("./mail.service");
+const { createEmailVerificationToken } = require("../security/emailVerificationToken");
+const { createPasswordResetToken } = require("../security/passwordToken");
+const { sendVerificationEmail, sendPasswordResetEmail } = require("./mail.service");
 
 const EMAIL_VERIFICATION_ERROR_MESSAGE =
   "Invalid or expired verification token";
@@ -79,6 +78,49 @@ exports.resendVerificationEmail = async (email) => {
   await sendVerificationEmail(user.email, emailVerificationToken);
 
   return { message: "Verification email sent successfully" };
+};
+
+exports.forgotPassword = async (email) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    throw new Error("User not found");
+  }
+  const passwordResetToken = await prisma.passwordResetToken.deleteMany({ where: { userId: user.id } });
+  const token = await createPasswordResetToken(user.id);
+  await sendPasswordResetEmail(user.email, token);
+  return { message: "If this email exists, we have sent a password reset link." };
+
+};
+
+exports.resetPassword = async (token, newPassword) => {
+  const payload = jwt.verifyPasswordResetToken(token);
+  const storedToken = await prisma.passwordResetToken.findUnique({
+    where: { userId: payload.id },
+  });
+
+  if (
+    !storedToken ||
+    !storedToken.expiresAt ||
+    storedToken.expiresAt < new Date()
+  ) {
+    throw new Error("Invalid password reset token");
+  }
+  if (!storedToken.jti || storedToken.jti !== payload.jti) {
+    throw new Error("Invalid password reset token");
+  }
+  const isMatch = await bcrypt.compare(token, storedToken.tokenHash);
+  if (!isMatch) {
+    throw new Error("Invalid password reset token");
+  }
+  await prisma.user.update({
+    where: { id: payload.id },
+    data: { password: await bcrypt.hash(newPassword, 10) },
+  });
+  await prisma.passwordResetToken.delete({ where: { userId: payload.id } });
+  await prisma.refreshToken.deleteMany({
+    where: { userId: payload.id },
+  });
+  return { message: "Password reset successfully" };
 };
 
 exports.loginUser = async (userData) => {
@@ -214,6 +256,8 @@ module.exports = {
   registerUser: exports.registerUser,
   verifyEmail: exports.verifyEmail,
   resendVerificationEmail: exports.resendVerificationEmail,
+  forgotPassword: exports.forgotPassword,
+  resetPassword: exports.resetPassword,
   loginUser: exports.loginUser,
   refreshToken: exports.refreshToken,
   getProfile: exports.getProfile,

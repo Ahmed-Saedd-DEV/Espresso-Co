@@ -32,6 +32,7 @@ model User {
   reviews  Review[]
   refreshTokens RefreshToken[]
   emailVerificationToken EmailVerificationToken?
+  passwordResetToken PasswordResetToken?
 }
 
 model Product {
@@ -43,7 +44,7 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  userId Int
+  userId Int           @unique
   user   User @relation(fields: [userId], references: [id])
   categoryId    Int?
   category      Category? @relation(fields: [categoryId], references: [id])
@@ -86,7 +87,7 @@ model CartProduct {
 
 model Order {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    Int      @unique
   user      User     @relation(fields: [userId], references: [id])
   total     Float
   status    String   @default("PENDING")
@@ -111,7 +112,7 @@ model OrderItem {
 
 model Review {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    Int      @unique
   user      User     @relation(fields: [userId], references: [id])
   productId Int
   product   Product  @relation(fields: [productId], references: [id])
@@ -127,7 +128,7 @@ model RefreshToken {
   jti       String   @unique
   revoked   Boolean  @default(false)
   expiresAt DateTime
-  userId    Int
+  userId    Int      @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -141,6 +142,18 @@ model EmailVerificationToken {
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  userId     Int      @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model PasswordResetToken {
+  id         Int      @id @default(autoincrement())
+  tokenHash  String
+  jti        String   @unique
+  expiresAt  DateTime
+
+  createdAt  DateTime @default(now())
 
   userId     Int      @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
