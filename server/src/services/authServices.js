@@ -246,9 +246,8 @@ exports.logoutUser = async (userId) => {
     throw new Error("Valid user ID is required");
   }
 
-  await prisma.refreshToken.updateMany({
-    where: { userId: parsedUserId, revoked: false },
-    data: { revoked: true },
+  await prisma.refreshToken.delete({
+    where: { userId: parsedUserId },
   });
 };
 
