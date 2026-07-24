@@ -14,6 +14,7 @@ const {
 } = require("./routes/index");
 
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 app.use("/auth", authRoutes);
 app.use("/products", productsRouters);
 app.use("/cart", cartRoutes);

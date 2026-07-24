@@ -18,6 +18,7 @@ const sendVerificationEmail = async (email, token) => {
       </a>
     `,
   });
+  console.log("Verification email sent: %s", verificationLink);
 };
 
 const sendPasswordResetEmail = async (email, token) => {
@@ -36,7 +37,7 @@ const sendPasswordResetEmail = async (email, token) => {
       </a>
     `,
   });
-  console.log("Password reset email sent: %s", token);
+  console.log("Password reset email sent: %s", resetLink);
 };
 
 module.exports = {
