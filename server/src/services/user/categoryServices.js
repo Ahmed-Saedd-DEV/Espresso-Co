@@ -26,4 +26,3 @@ exports.getCategoryById = async (categoryId) => {
 
 
 
-module.exports = exports;

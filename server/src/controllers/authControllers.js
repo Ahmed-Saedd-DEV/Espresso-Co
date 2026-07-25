@@ -57,7 +57,9 @@ exports.resetPassword = async (req, res) => {
     const { token, newPassword } = req.body;
 
     if (!token || !newPassword) {
-      return res.status(400).json({ message: "Token and new password are required" });
+      return res
+        .status(400)
+        .json({ message: "Token and new password are required" });
     }
 
     const result = await authServices.resetPassword(token, newPassword);
@@ -113,12 +115,15 @@ exports.getProfile = async (req, res) => {
 
 exports.logoutUser = async (req, res) => {
   try {
-    const userId = req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
+    const { refreshToken } = parseCookies(req);
+    if (!refreshToken) {
+      return res.status(401).json({
+        error: "Refresh token is required",
+      });
     }
 
-    await authServices.logoutUser(userId);
+    await authServices.logoutUser(refreshToken);
+
     res.clearCookie("refreshToken", {
       httpOnly: true,
       sameSite: "strict",
@@ -127,18 +132,15 @@ exports.logoutUser = async (req, res) => {
     });
     res.json({ message: "Logout successful" });
   } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
+    res.status(200).json({
+        message: "Logout successful",
+    });
+}
 };
 
-module.exports = {
-  registerUser: exports.registerUser,
-  verifyEmail: exports.verifyEmail,
-  resendVerificationEmail: exports.resendVerificationEmail,
-  forgotPassword: exports.forgotPassword,
-  resetPassword: exports.resetPassword,
-  loginUser: exports.loginUser,
-  refreshToken: exports.refreshToken,
-  getProfile: exports.getProfile,
-  logoutUser: exports.logoutUser,
-};

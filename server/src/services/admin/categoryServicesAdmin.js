@@ -78,4 +78,3 @@ exports.deleteCategory = async (categoryId) => {
     });
 };
 
-module.exports = exports;

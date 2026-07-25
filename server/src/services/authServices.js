@@ -2,14 +2,26 @@ const prisma = require("../prisma/prismaClient");
 const bcrypt = require("bcrypt");
 const jwt = require("../utils/jwt");
 const { buildAccessTokenPayload } = require("../utils/authUtils");
-const { createEmailVerificationToken } = require("../security/emailVerificationToken");
+const {
+  createEmailVerificationToken,
+} = require("../security/emailVerificationToken");
 const { createPasswordResetToken } = require("../security/passwordToken");
-const { sendVerificationEmail, sendPasswordResetEmail } = require("./mail.service");
+const {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+} = require("./mail.service");
 
 const EMAIL_VERIFICATION_ERROR_MESSAGE =
   "Invalid or expired verification token";
 
-exports.registerUser = async (userData) => {
+const buildRefreshTokenCookie = (token) => {
+  const secureAttribute =
+    process.env.NODE_ENV === "production" ? "; Secure" : "";
+
+  return `refreshToken=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Strict${secureAttribute}`;
+};
+
+const registerUser = async (userData) => {
   const { email, password, name } = userData;
   const hashedPassword = await bcrypt.hash(password, 10);
   const emailExists = await prisma.user.findUnique({ where: { email } });
@@ -37,7 +49,7 @@ exports.registerUser = async (userData) => {
   };
 };
 
-exports.verifyEmail = async (token) => {
+const verifyEmail = async (token) => {
   const payload = jwt.verifyEmailVerificationToken(token);
   const storedToken = await prisma.emailVerificationToken.findUnique({
     where: { userId: payload.id },
@@ -64,35 +76,42 @@ exports.verifyEmail = async (token) => {
   return { message: "Email verified successfully" };
 };
 
-
-exports.resendVerificationEmail = async (email) => {
+const resendVerificationEmail = async (email) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return { message: "If an account exists and is not verified, a verification email has been sent." };
+    return {
+      message:
+        "If an account exists and is not verified, a verification email has been sent.",
+    };
   }
   if (user.isVerified) {
     throw new Error("Email is already verified");
   }
-  await prisma.emailVerificationToken.deleteMany({ where: { userId: user.id } });
+  await prisma.emailVerificationToken.deleteMany({
+    where: { userId: user.id },
+  });
   const emailVerificationToken = await createEmailVerificationToken(user.id);
   await sendVerificationEmail(user.email, emailVerificationToken);
 
   return { message: "Verification email sent successfully" };
 };
 
-exports.forgotPassword = async (email) => {
+const forgotPassword = async (email) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
     throw new Error("User not found");
   }
-  const passwordResetToken = await prisma.passwordResetToken.deleteMany({ where: { userId: user.id } });
+  const passwordResetToken = await prisma.passwordResetToken.deleteMany({
+    where: { userId: user.id },
+  });
   const token = await createPasswordResetToken(user.id);
   await sendPasswordResetEmail(user.email, token);
-  return { message: "If this email exists, we have sent a password reset link." };
-
+  return {
+    message: "If this email exists, we have sent a password reset link.",
+  };
 };
 
-exports.resetPassword = async (token, newPassword) => {
+const resetPassword = async (token, newPassword) => {
   const payload = jwt.verifyPasswordResetToken(token);
   const storedToken = await prisma.passwordResetToken.findUnique({
     where: { userId: payload.id },
@@ -123,7 +142,7 @@ exports.resetPassword = async (token, newPassword) => {
   return { message: "Password reset successfully" };
 };
 
-exports.loginUser = async (userData) => {
+const loginUser = async (userData) => {
   const { email, password } = userData;
   const user = await prisma.user.findUnique({ where: { email } });
 
@@ -155,73 +174,78 @@ exports.loginUser = async (userData) => {
     message: "Login successful",
     token: accessToken,
     refreshToken,
-    refreshTokenCookie: `refreshToken=${refreshToken}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Strict`,
+    refreshTokenCookie: buildRefreshTokenCookie(refreshToken),
   };
 };
 
-exports.refreshToken = async (refreshTokenValue) => {
+const refreshToken = async (refreshTokenValue) => {
   const decoded = jwt.verifyRefreshToken(refreshTokenValue);
-  const storedTokens = await prisma.refreshToken.findMany({
+  const storedToken = await prisma.refreshToken.findUnique({
     where: {
-      userId: decoded.id,
-      revoked: false,
+      jti: decoded.jti,
     },
   });
 
-  let matchingToken = null;
-  for (const storedToken of storedTokens) {
-    const isValid = await bcrypt.compare(
-      refreshTokenValue,
-      storedToken.tokenHash,
-    );
-    if (isValid) {
-      matchingToken = storedToken;
-      break;
-    }
-  }
-
-  if (!matchingToken) {
+  if (!storedToken) {
     throw new Error("Invalid refresh token");
   }
 
-  const accessToken = jwt.accessToken(
-    buildAccessTokenPayload({
-      id: decoded.id,
-      email: decoded.email,
-      role: decoded.role,
-    }),
-  );
+  if (storedToken.revoked) {
+    throw new Error("Refresh token revoked");
+  }
+
+  if (storedToken.expiresAt < new Date()) {
+    throw new Error("Refresh token expired");
+  }
+
+  if (storedToken.userId !== decoded.id) {
+    throw new Error("Invalid refresh token");
+  }
+
+  const match = await bcrypt.compare(refreshTokenValue, storedToken.tokenHash);
+
+  if (!match) {
+    throw new Error("Invalid refresh token");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: decoded.id },
+    select: { id: true, email: true, role: true },
+  });
+
+  if (!user) {
+    throw new Error("Invalid refresh token");
+  }
+
+  const accessToken = jwt.accessToken(buildAccessTokenPayload(user));
   const { token: newRefreshToken, jti: newJti } = jwt.generateRefreshToken(
-    buildAccessTokenPayload({
-      id: decoded.id,
-      email: decoded.email,
-      role: decoded.role,
-    }),
+    buildAccessTokenPayload(user),
   );
   const newHashedRefreshToken = await bcrypt.hash(newRefreshToken, 10);
 
-  await prisma.refreshToken.update({
-    where: { id: matchingToken.id },
-    data: { revoked: true },
-  });
-
-  await prisma.refreshToken.create({
-    data: {
-      tokenHash: newHashedRefreshToken,
-      jti: newJti,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      userId: decoded.id,
-    },
-  });
+  await prisma.$transaction([
+    prisma.refreshToken.update({
+      where: { jti: decoded.jti },
+      data: { revoked: true },
+    }),
+    prisma.refreshToken.create({
+      data: {
+        tokenHash: newHashedRefreshToken,
+        jti: newJti,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        userId: decoded.id,
+      },
+    }),
+  ]);
 
   return {
     token: accessToken,
     refreshToken: newRefreshToken,
-    refreshTokenCookie: `refreshToken=${newRefreshToken}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Strict`,
+    refreshTokenCookie: buildRefreshTokenCookie(newRefreshToken),
   };
 };
 
-exports.getProfile = async (userId) => {
+const getProfile = async (userId) => {
   const parsedUserId = Number(userId);
 
   if (!Number.isInteger(parsedUserId)) {
@@ -240,25 +264,57 @@ exports.getProfile = async (userId) => {
   return user;
 };
 
-exports.logoutUser = async (userId) => {
-  const parsedUserId = Number(userId);
-  if (!Number.isInteger(parsedUserId)) {
-    throw new Error("Valid user ID is required");
+const logoutUser = async (refreshToken) => {
+  const payload = jwt.verifyRefreshToken(refreshToken);
+  if (!payload || !payload.jti || !payload.id) {
+    throw new Error("Invalid refresh token");
   }
 
-  await prisma.refreshToken.deleteMany({
-    where: { userId: parsedUserId },
+  const tokens = await prisma.refreshToken.findUnique({
+    where: {
+      jti: payload.jti,
+    },
+  });
+  if (!tokens) {
+    throw new Error("Invalid refresh token");
+  }
+
+  if (tokens.revoked) {
+    throw new Error("Refresh token revoked");
+  }
+
+  if (tokens.expiresAt < new Date()) {
+    throw new Error("Refresh token expired");
+  }
+
+  if (tokens.userId !== payload.id) {
+    throw new Error("Invalid refresh token");
+  }
+
+  const match = await bcrypt.compare(refreshToken, tokens.tokenHash);
+
+  if (!match) {
+    throw new Error("Invalid refresh token");
+  }
+
+  await prisma.refreshToken.update({
+    where: {
+      jti: payload.jti,
+    },
+    data: {
+      revoked: true,
+    },
   });
 };
 
 module.exports = {
-  registerUser: exports.registerUser,
-  verifyEmail: exports.verifyEmail,
-  resendVerificationEmail: exports.resendVerificationEmail,
-  forgotPassword: exports.forgotPassword,
-  resetPassword: exports.resetPassword,
-  loginUser: exports.loginUser,
-  refreshToken: exports.refreshToken,
-  getProfile: exports.getProfile,
-  logoutUser: exports.logoutUser,
+  registerUser,
+  verifyEmail,
+  resendVerificationEmail,
+  forgotPassword,
+  resetPassword,
+  loginUser,
+  refreshToken,
+  getProfile,
+  logoutUser,
 };

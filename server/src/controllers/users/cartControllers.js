@@ -40,9 +40,3 @@ exports.removeFromCart = async (req, res) => {
     }
 };
 
-module.exports = {
-    getCart: exports.getCart,
-    addToCart: exports.addToCart,
-    updateCartItem: exports.updateCartItem,
-    removeFromCart: exports.removeFromCart
-};

@@ -1,12 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const categoryControllers = require('../../controllers/users/categoryControllers');
-const authMiddleware = require('../../middleware/authMiddleware');
+const categoryControllers = require("../../controllers/users/categoryControllers");
+const authMiddleware = require("../../middleware/authMiddleware");
 
-
-router.get('/categories', categoryControllers.getCategories);
-router.get('/categories/:id', categoryControllers.getCategoryById);
-
+router.get("/", categoryControllers.getCategories);
+router.get("/:id", categoryControllers.getCategoryById);
 
 module.exports = router;

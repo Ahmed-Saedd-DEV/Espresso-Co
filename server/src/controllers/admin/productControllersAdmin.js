@@ -66,10 +66,3 @@ exports.deleteImageProduct = async (req, res) => {
   }
 };
 
-module.exports = {
-  createProduct: exports.createProduct,
-  updateProduct: exports.updateProduct,
-  deleteProduct: exports.deleteProduct,
-  createImageProduct: exports.createImageProduct,
-  deleteImageProduct: exports.deleteImageProduct,
-};

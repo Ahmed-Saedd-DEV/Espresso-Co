@@ -1,14 +1,27 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const categoryControllers = require('../../controllers/admin/categoryControllersAdmin');
-const authMiddleware = require('../../middleware/authMiddleware');
-const permit = require('../../middleware/permissionMiddleware');
+const categoryControllers = require("../../controllers/admin/categoryControllersAdmin");
+const authMiddleware = require("../../middleware/authMiddleware");
+const permit = require("../../middleware/permissionMiddleware");
 
-
-router.post('/categories', authMiddleware, permit('ADMIN'), categoryControllers.createCategory);
-router.patch('/categories/:id', authMiddleware, permit('ADMIN'), categoryControllers.updateCategory);
-router.delete('/categories/:id', authMiddleware, permit('ADMIN'), categoryControllers.deleteCategory);
-
+router.post(
+  "/",
+  authMiddleware,
+  permit("ADMIN"),
+  categoryControllers.createCategory,
+);
+router.patch(
+  "/:id",
+  authMiddleware,
+  permit("ADMIN"),
+  categoryControllers.updateCategory,
+);
+router.delete(
+  "/:id",
+  authMiddleware,
+  permit("ADMIN"),
+  categoryControllers.deleteCategory,
+);
 
 module.exports = router;

@@ -19,7 +19,3 @@ exports.getProductById = async (req, res) => {
 };
 
 
-module.exports = {
-    getProducts: exports.getProducts,
-    getProductById: exports.getProductById,
-};

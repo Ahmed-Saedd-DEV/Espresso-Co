@@ -30,7 +30,3 @@ exports.createReview = async (reviewData, userId) => {
     });
 };
 
-
-module.exports = {
-    createReview: exports.createReview
-};

@@ -27,8 +27,3 @@ exports.deleteCategory = async (req, res) => {
     }
 };
 
-module.exports = {
-    createCategory: exports.createCategory,
-    updateCategory: exports.updateCategory,
-    deleteCategory: exports.deleteCategory
-};

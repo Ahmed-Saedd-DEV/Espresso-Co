@@ -4,26 +4,21 @@ const cartControllers = require("../../controllers/users/cartControllers");
 const authMiddleware = require("../../middleware/authMiddleware");
 const requireVerifiedUser = require("../../middleware/requireVerifiedUser");
 
-router.get(
-  "/cart",
-  authMiddleware,
-  requireVerifiedUser,
-  cartControllers.getCart,
-);
+router.get("/", authMiddleware, requireVerifiedUser, cartControllers.getCart);
 router.post(
-  "/cart",
+  "/",
   authMiddleware,
   requireVerifiedUser,
   cartControllers.addToCart,
 );
 router.patch(
-  "/cart/:id",
+  "/:id",
   authMiddleware,
   requireVerifiedUser,
   cartControllers.updateCartItem,
 );
 router.delete(
-  "/cart/:id",
+  "/:id",
   authMiddleware,
   requireVerifiedUser,
   cartControllers.removeFromCart,

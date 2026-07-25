@@ -88,7 +88,7 @@ model CartProduct {
 
 model Order {
   id        Int      @id @default(autoincrement())
-  userId    Int      @unique
+  userId    Int      
   user      User     @relation(fields: [userId], references: [id])
   total     Float
   status    String   @default("PENDING")

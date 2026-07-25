@@ -19,7 +19,3 @@ exports.getCategoryById = async (req, res) => {
 };
 
 
-module.exports = {
-    getCategories: exports.getCategories,
-    getCategoryById: exports.getCategoryById,
-};

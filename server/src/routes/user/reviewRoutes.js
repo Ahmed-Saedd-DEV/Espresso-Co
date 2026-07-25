@@ -6,7 +6,7 @@ const authMiddleware = require("../../middleware/authMiddleware");
 const requireVerifiedUser = require("../../middleware/requireVerifiedUser");
 
 router.post(
-  "/reviews",
+  "/",
   authMiddleware,
   requireVerifiedUser,
   reviewControllers.createReview,

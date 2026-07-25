@@ -10,6 +10,3 @@ exports.createReview = async (req, res) => {
     }
 };
 
-module.exports = {
-    createReview: exports.createReview
-};
