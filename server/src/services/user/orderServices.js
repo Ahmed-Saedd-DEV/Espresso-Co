@@ -1,64 +1,102 @@
 const prisma = require('../../prisma/prismaClient');
 
 const createOrder = async (orderData, userId) => {
-    let items = orderData.orderItems || orderData.items;
-
-    if (!items && orderData.productId) {
-        items = [orderData];
-    }
-
-    if (!items || items.length === 0) {
-        throw new Error('No order items provided');
-    }
-
     if (!userId) {
-        throw new Error('Authentication required');
+        throw new Error("Authentication required");
+    }
+
+    const items = orderData.items;
+
+    if (!Array.isArray(items) || items.length === 0) {
+        throw new Error("No order items provided");
     }
 
     const normalizedItems = items.map((item) => ({
-        ...item,
-        price: Number(item.price),
-        quantity: Number(item.quantity || 1)
+        productId: Number(item.productId),
+        quantity: Number(item.quantity ?? 1),
     }));
 
-    if (normalizedItems.some((item) => Number.isNaN(item.price) || item.price < 0)) {
-        throw new Error('Each order item must have a valid price');
+    const invalidItem = normalizedItems.some(
+        (item) =>
+            !Number.isInteger(item.productId) ||
+            item.productId <= 0 ||
+            !Number.isInteger(item.quantity) ||
+            item.quantity <= 0
+    );
+
+    if (invalidItem) {
+        throw new Error("Invalid order items");
     }
 
-    const total = normalizedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const productIds = [
+        ...new Set(
+            normalizedItems.map(
+                (item) => item.productId
+            )
+        ),
+    ];
+
+    const products = await prisma.product.findMany({
+        where: {
+            id: {
+                in: productIds,
+            },
+        },
+    });
+
+    if (products.length !== productIds.length) {
+        throw new Error(
+            "One or more products not found"
+        );
+    }
+
+    const orderItems = normalizedItems.map((item) => {
+        const product = products.find(
+            (product) => product.id === item.productId
+        );
+
+        return {
+            productId: product.id,
+            quantity: item.quantity,
+            price: product.price,
+        };
+    });
+
+    const total = orderItems.reduce(
+        (sum, item) =>
+            sum + item.price * item.quantity,
+        0
+    );
 
     if (!Number.isFinite(total) || total <= 0) {
-        throw new Error('Invalid total amount');
+        throw new Error("Invalid total amount");
     }
 
-    return await prisma.$transaction(async (tx) => {
-        const newOrder = await tx.order.create({
+    return prisma.$transaction(async (tx) => {
+        const order = await tx.order.create({
             data: {
-                user: {
-                    connect: { id: userId }
-                },
+                userId,
                 total,
-                status: orderData.status || 'PENDING'
+                status: "PENDING",
             },
-            include: {
-                orderItems: true
-            }
         });
 
         await tx.orderItem.createMany({
-            data: normalizedItems.map((item) => ({
-                orderId: newOrder.id,
+            data: orderItems.map((item) => ({
+                orderId: order.id,
                 productId: item.productId,
-                quantity: item.quantity || 1,
-                price: item.price
-            }))
+                quantity: item.quantity,
+                price: item.price,
+            })),
         });
 
-        return await tx.order.findUnique({
-            where: { id: newOrder.id },
+        return tx.order.findUnique({
+            where: {
+                id: order.id,
+            },
             include: {
-                orderItems: true
-            }
+                orderItems: true,
+            },
         });
     });
 };

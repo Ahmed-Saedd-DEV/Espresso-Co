@@ -1,3 +1,4 @@
+const fs = require("fs");
 const path = require("path");
 const productService = require("../../services/admin/productServicesAdmin");
 
@@ -44,16 +45,37 @@ exports.createImageProduct = async (req, res) => {
     }
 
     const imagePaths = req.files.map((file) =>
-      path.posix.join("uploads", "products", file.filename),
+      path.posix.join("uploads", "products", file.filename)
     );
 
-    const newImageProduct = await productService.createImageProduct(
-      productId,
-      imagePaths,
-    );
-    res.status(201).json(newImageProduct);
+    try {
+      const newImageProduct = await productService.createImageProduct(
+        productId,
+        imagePaths
+      );
+
+      return res.status(201).json(newImageProduct);
+    } catch (error) {
+      // DB failed → delete uploaded files
+      await Promise.all(
+        req.files.map(async (file) => {
+          try {
+            await fs.promises.unlink(file.path);
+          } catch (unlinkError) {
+            console.error(
+              `Failed to cleanup uploaded file: ${file.path}`,
+              unlinkError.message
+            );
+          }
+        })
+      );
+
+      throw error;
+    }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    return res.status(400).json({
+      error: error.message,
+    });
   }
 };
 

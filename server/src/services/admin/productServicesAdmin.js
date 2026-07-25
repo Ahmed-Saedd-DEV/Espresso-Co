@@ -125,7 +125,9 @@ exports.createImageProduct = async (productId, imagePaths) => {
 
 exports.deleteImageProduct = async (imageId) => {
   const existingImage = await prisma.image.findUnique({
-    where: { id: Number(imageId) },
+    where: {
+      id: Number(imageId),
+    },
   });
 
   if (!existingImage) {
@@ -133,17 +135,30 @@ exports.deleteImageProduct = async (imageId) => {
   }
 
   if (existingImage.url) {
+    const uploadsDir = path.resolve("uploads/products");
     const imagePath = path.resolve(existingImage.url);
+
+    const isInsideUploads =
+      imagePath === uploadsDir ||
+      imagePath.startsWith(uploadsDir + path.sep);
+
+    if (!isInsideUploads) {
+      throw new Error("Invalid image path");
+    }
 
     try {
       await fs.promises.unlink(imagePath);
     } catch (error) {
-      console.error(`Failed to delete image file: ${imagePath}`, error.message);
+      if (error.code !== "ENOENT") {
+        throw new Error("Failed to delete image file");
+      }
     }
   }
 
   await prisma.image.delete({
-    where: { id: Number(imageId) },
+    where: {
+      id: Number(imageId),
+    },
   });
 
   return true;
