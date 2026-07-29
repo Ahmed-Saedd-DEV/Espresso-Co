@@ -2,7 +2,7 @@ const transporter = require("../utils/email");
 
 const sendVerificationEmail = async (email, token) => {
   const verificationLink =
-    `http://localhost:5000/auth/verify-email?token=${token}`;
+    `${process.env.APP_URL}/auth/verify-email?token=${token}`;
 
 
   const info = await transporter.sendMail({
@@ -22,7 +22,7 @@ const sendVerificationEmail = async (email, token) => {
 };
 
 const sendPasswordResetEmail = async (email, token) => {
-  const resetLink = `http://localhost:5000/auth/reset-password?token=${token}`;
+  const resetLink = `${process.env.APP_URL}/auth/reset-password?token=${token}`;
 
   const info = await transporter.sendMail({
     from: process.env.EMAIL_USER,
