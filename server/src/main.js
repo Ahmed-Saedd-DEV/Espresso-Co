@@ -11,6 +11,7 @@ const {
   categoryRoutes,
   categoryRoutesAdmin,
   productRoutesAdmin,
+  uesrRoutesAdmin,
 } = require("./routes/index");
 
 app.use(express.json());
@@ -23,6 +24,7 @@ app.use("/reviews", reviewRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/admin/categories", categoryRoutesAdmin);
 app.use("/admin/products", productRoutesAdmin);
+app.use("/admin/users", uesrRoutesAdmin);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });

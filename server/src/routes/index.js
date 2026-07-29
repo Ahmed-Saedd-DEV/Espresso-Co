@@ -6,6 +6,7 @@ const reviewRoutes = require('./user/reviewRoutes');
 const categoryRoutes = require('./user/categoryRoutes');
 const categoryRoutesAdmin = require('./admin/categoryRoutesAdmin');
 const productRoutesAdmin = require('./admin/productsRoutersAdmin');
+const uesrRoutesAdmin = require('./admin/userRoutersAdmin');
 
 module.exports = {
     authRoutes,
@@ -15,5 +16,6 @@ module.exports = {
     reviewRoutes,
     categoryRoutes,
     categoryRoutesAdmin,
-    productRoutesAdmin
+    productRoutesAdmin,
+    uesrRoutesAdmin,
 };

@@ -1,20 +1,22 @@
 function permit(...roles) {
-    return (req, res, next) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
 
-        if (!req.user) {
-            return res.status(401).json({
-                message: "Unauthorized"
-            });
-        }
+    const normalizedUserRole = String(req.user.role || "").toUpperCase();
+    const normalizedRoles = roles.map((role) => String(role).toUpperCase());
 
-        if (!roles.includes(req.user.role)) {
-            return res.status(403).json({
-                message: "Forbidden"
-            });
-        }
+    if (!normalizedRoles.includes(normalizedUserRole)) {
+      return res.status(403).json({
+        message: "Forbidden",
+      });
+    }
 
-        next();
-    };
+    next();
+  };
 }
 
 module.exports = permit;
