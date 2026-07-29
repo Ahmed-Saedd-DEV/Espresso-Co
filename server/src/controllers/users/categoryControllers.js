@@ -1,21 +1,52 @@
-const categoryService = require('../../services/user/categoryServices');
+const categoryService = require("../../services/user/categoryServices");
 
 exports.getCategories = async (req, res) => {
-    try {
-        const categories = await categoryService.getCategories();
-        res.json(categories);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const {
+      page,
+      limit,
+      sort,
+      order,
+      stock,
+      price,
+      minPrice,
+      maxPrice,
+      categoryId,
+      search: searchQuery,
+    } = req.query;
+    const { categories, totalPages, totalRecords } =
+      await categoryService.getCategories(
+        {page,
+        limit,
+        sort,
+        order,
+        stock,
+        price,
+        minPrice,
+        maxPrice,
+        categoryId,
+        search: searchQuery,},
+        { userId: req.user.id },
+      );
+    res.status(200).json({
+      data: categories,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        totalPages,
+        totalRecords,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 exports.getCategoryById = async (req, res) => {
-    try {
-        const category = await categoryService.getCategoryById(req.params.id);
-        res.json(category);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
+  try {
+    const category = await categoryService.getCategoryById(req.params.id);
+    res.json(category);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
 };
-
-

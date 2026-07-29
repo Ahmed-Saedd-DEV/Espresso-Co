@@ -1,6 +1,9 @@
 const { Prisma } = require("@prisma/client");
 const prisma = require("../../prisma/prismaClient");
 const orderUtils = require("../../utils/orderUtils");
+const pagination = require("../../utils/queryFeatures/pagination");
+const sort = require("../../utils/queryFeatures/sort");
+const filter = require("../../utils/queryFeatures/filter");
 
 const createOrder = async (orderData, userId) => {
   if (!userId) {
@@ -110,14 +113,33 @@ const createOrder = async (orderData, userId) => {
   });
 };
 
-const getOrders = async (userId) => {
+const getOrders = async (
+  { page, limit, sortBy, order, status },
+  { userId },
+) => {
   if (!userId) {
     throw new Error("Authentication required");
   }
-  return prisma.order.findMany({
-    where: { userId },
-    include: { orderItems: true },
+
+  const where = filter.getFiltered( { status, }, { userId },);
+  const totalRecords = await prisma.order.count({
+    where,
   });
+  const { skip, take, totalPages } = pagination.getPagination(
+    page,
+    limit,
+    totalRecords,
+  );
+  const whiteList = ["id", "total", "status", "createdAt", "updatedAt"];
+  const sorting = sort.getSorting(sortBy, order, whiteList);
+  const orders = await prisma.order.findMany({
+    where,
+    include: { orderItems: true },
+    skip,
+    take,
+    orderBy: sorting,
+  });
+  return { orders, totalPages, totalRecords };
 };
 
 const getOrderById = async (orderId, userId) => {

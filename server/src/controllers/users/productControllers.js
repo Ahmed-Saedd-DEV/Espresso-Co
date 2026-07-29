@@ -1,21 +1,48 @@
-const productService = require('../../services/user/productServices');
+const productService = require("../../services/user/productServices");
 
 exports.getProducts = async (req, res) => {
-    try {
-        const products = await productService.getProducts();
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    const { page, limit, sort, order, stock, price, minPrice, maxPrice, search: searchQuery } =
+      req.query;
+
+    const { products, totalPages, totalRecords } =
+      await productService.getProducts(
+        {
+          page,
+          limit,
+          sortBy: sort,
+          order,
+          stock,
+          price,
+          minPrice,
+          maxPrice,
+          search: searchQuery,
+        },
+        { userId: req.user.id },
+      );
+
+    res.json({
+      data: products,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        totalPages,
+        totalRecords,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 exports.getProductById = async (req, res) => {
-    try {
-        const product = await productService.getProductById(req.params.id);
-        res.json(product);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
+  try {
+    const product = await productService.getProductById(
+      req.params.id,
+      req.user.id,
+    );
+    res.json(product);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
 };
-
-

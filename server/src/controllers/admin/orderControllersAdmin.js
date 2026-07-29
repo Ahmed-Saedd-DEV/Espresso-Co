@@ -2,8 +2,17 @@ const orderServicesAdmin = require("../../services/admin/orderServicesAdmin");
 
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await orderServicesAdmin.getAllOrders();
-    res.status(200).json(orders);
+    const { page, limit, sort, order, status } = req.query;
+    const { orders, totalPages, totalRecords } = await orderServicesAdmin.getAllOrders(page, limit, sort, order, status);
+    res.status(200).json({
+      data: orders,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        totalPages,
+        totalRecords,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

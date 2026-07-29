@@ -11,5 +11,11 @@ router.post(
   requireVerifiedUser,
   reviewControllers.createReview,
 );
+router.get(
+  "/",
+  authMiddleware,
+  requireVerifiedUser,
+  reviewControllers.getReviews,
+);
 
 module.exports = router;

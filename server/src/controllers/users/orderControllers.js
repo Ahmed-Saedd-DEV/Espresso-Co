@@ -1,4 +1,4 @@
-const orderServices = require("../../services/user/orderServices");
+const orderServices = require("../../services/user/orderServices.js");
 
 exports.createOrder = async (req, res) => {
   try {
@@ -23,9 +23,20 @@ exports.createOrder = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
-    const { page, limit } = req.query;
-    const orders = await orderServices.getOrders(req.user.id, page, limit);
-    res.status(200).json(orders);
+    const { page, limit, sortBy, order, status } = req.query;
+    const { orders, totalPages, totalRecords } = await orderServices.getOrders(
+      { page, limit, sortBy, order, status },
+      { userId: req.user.id },
+    );
+    res.status(200).json({
+      data: orders,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        totalPages,
+        totalRecords,
+      },
+    });
   } catch (error) {
     res.status(401).json({
       error: error.message,

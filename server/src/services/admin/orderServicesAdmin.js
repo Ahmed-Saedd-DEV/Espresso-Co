@@ -1,12 +1,30 @@
 const prisma = require("../../prisma/prismaClient");
 const orderUtils = require("../../utils/orderUtils");
+const pagination = require("../../utils/queryFeatures/pagination");
+const sort = require("../../utils/queryFeatures/sort");
+const filter = require("../../utils/queryFeatures/filter");
 
-const getAllOrders = async () => {
-  return prisma.order.findMany({
+const getAllOrders = async (page, limit, sortBy, order, status) => {
+  const where = filter.getFiltered( {status}, { },);
+  const totalRecords = await prisma.order.count({ where });
+  const { skip, take, totalPages } = pagination.getPagination(
+    page,
+    limit,
+    totalRecords,
+  );
+  const whiteList = ["name", "price", "stock", "createdAt", "updatedAt"];
+  const sorting = sort.getSorting(sortBy, order, whiteList);
+
+  const orders = await prisma.order.findMany({
+    where,
     include: {
       orderItems: true,
     },
+    skip,
+    take,
+    orderBy: sorting,
   });
+  return { orders, totalPages, totalRecords };
 };
 
 const getOrderById = async (orderId) => {
