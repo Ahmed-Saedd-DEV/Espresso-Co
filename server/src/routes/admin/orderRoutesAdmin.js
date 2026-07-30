@@ -5,8 +5,48 @@ const orderControllersAdmin = require("../../controllers/admin/orderControllersA
 const authMiddleware = require("../../middleware/authMiddleware");
 const requireVerifiedUser = require("../../middleware/requireVerifiedUser");
 const permit = require("../../middleware/permissionMiddleware");
+const validate = require("../../middleware/validate");
 
-router.get("/", authMiddleware, requireVerifiedUser, permit("admin"), orderControllersAdmin.getAllOrders);
-router.get("/:orderId", authMiddleware, requireVerifiedUser, permit("admin"), orderControllersAdmin.getOrderById);
-router.patch("/:orderId", authMiddleware, requireVerifiedUser, permit("admin"), orderControllersAdmin.updateOrderStatus);
-router.delete("/:orderId", authMiddleware, requireVerifiedUser, permit("admin"), orderControllersAdmin.deleteOrder); 
+const {
+  orderIdSchema,
+  updateOrderStatusSchema,
+  getAllOrdersSchema,
+} = require("../../validators/admin/order.validator");
+
+router.get(
+  "/",
+  authMiddleware,
+  requireVerifiedUser,
+  permit("ADMIN"),
+  validate(getAllOrdersSchema),
+  orderControllersAdmin.getAllOrders,
+);
+
+router.get(
+  "/:orderId",
+  authMiddleware,
+  requireVerifiedUser,
+  permit("ADMIN"),
+  validate(orderIdSchema),
+  orderControllersAdmin.getOrderById,
+);
+
+router.patch(
+  "/:orderId",
+  authMiddleware,
+  requireVerifiedUser,
+  permit("ADMIN"),
+  validate(updateOrderStatusSchema),
+  orderControllersAdmin.updateOrderStatus,
+);
+
+router.delete(
+  "/:orderId",
+  authMiddleware,
+  requireVerifiedUser,
+  permit("ADMIN"),
+  validate(orderIdSchema),
+  orderControllersAdmin.deleteOrder,
+);
+
+module.exports = router;

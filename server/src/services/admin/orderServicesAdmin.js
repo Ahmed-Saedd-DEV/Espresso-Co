@@ -4,27 +4,41 @@ const pagination = require("../../utils/queryFeatures/pagination");
 const sort = require("../../utils/queryFeatures/sort");
 const filter = require("../../utils/queryFeatures/filter");
 
-const getAllOrders = async (page, limit, sortBy, order, status) => {
-  const where = filter.getFiltered( {status}, { },);
+const getAllOrders = async ({
+  page,
+  limit,
+  sort: sortField,
+  order,
+  status,
+}) => {
+  const where = filter.getFiltered({ status }, {});
   const totalRecords = await prisma.order.count({ where });
-  const { skip, take, totalPages } = pagination.getPagination(
-    page,
-    limit,
-    totalRecords,
+  const paginationData = pagination.getPagination(page, limit, totalRecords);
+  const whiteList = ["id", "total", "status", "createdAt", "updatedAt"];
+  const normalizedSort = sort.resolveSortQuery({ sort: sortField, order });
+  const sorting = sort.getSorting(
+    normalizedSort.sort,
+    normalizedSort.order,
+    whiteList,
   );
-  const whiteList = ["name", "price", "stock", "createdAt", "updatedAt"];
-  const sorting = sort.getSorting(sortBy, order, whiteList);
 
   const orders = await prisma.order.findMany({
     where,
     include: {
       orderItems: true,
     },
-    skip,
-    take,
+    skip: paginationData.skip,
+    take: paginationData.take,
     orderBy: sorting,
   });
-  return { orders, totalPages, totalRecords };
+
+  return {
+    orders,
+    totalPages: paginationData.totalPages,
+    totalRecords,
+    page: paginationData.page,
+    limit: paginationData.limit,
+  };
 };
 
 const getOrderById = async (orderId) => {
@@ -120,16 +134,33 @@ const deleteOrder = async (orderId) => {
     throw new Error("Invalid order ID");
   }
 
-  try {
-    return await prisma.order.delete({
+  return prisma.$transaction(async (tx) => {
+    const existingOrder = await tx.order.findUnique({
       where: { id },
+      include: { orderItems: true },
     });
-  } catch (error) {
-    if (error.code === "P2025") {
+
+    if (!existingOrder) {
       throw new Error("Order not found");
     }
-    throw error;
-  }
+
+    if (existingOrder.status === "CANCELLED") {
+      throw new Error("Order is already cancelled");
+    }
+
+    const orderItems = existingOrder.orderItems.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+    }));
+
+    await orderUtils.updateIncreaseStock(orderItems, tx);
+
+    return tx.order.update({
+      where: { id },
+      data: { status: "CANCELLED" },
+      include: { orderItems: true },
+    });
+  });
 };
 
 module.exports = {

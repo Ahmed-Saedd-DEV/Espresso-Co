@@ -3,12 +3,24 @@ const orderServicesAdmin = require("../../services/admin/orderServicesAdmin");
 exports.getAllOrders = async (req, res) => {
   try {
     const { page, limit, sort, order, status } = req.query;
-    const { orders, totalPages, totalRecords } = await orderServicesAdmin.getAllOrders(page, limit, sort, order, status);
+    const {
+      orders,
+      totalPages,
+      totalRecords,
+      page: activePage,
+      limit: activeLimit,
+    } = await orderServicesAdmin.getAllOrders({
+      page,
+      limit,
+      sort,
+      order,
+      status,
+    });
     res.status(200).json({
       data: orders,
       pagination: {
-        page: Number(page),
-        limit: Number(limit),
+        page: activePage,
+        limit: activeLimit,
         totalPages,
         totalRecords,
       },

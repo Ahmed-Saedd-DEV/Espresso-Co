@@ -23,16 +23,22 @@ exports.createOrder = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
-    const { page, limit, sortBy, order, status } = req.query;
-    const { orders, totalPages, totalRecords } = await orderServices.getOrders(
-      { page, limit, sortBy, order, status },
+    const { page, limit, sort, order, status } = req.query;
+    const {
+      orders,
+      totalPages,
+      totalRecords,
+      page: activePage,
+      limit: activeLimit,
+    } = await orderServices.getOrders(
+      { page, limit, sort, order, status },
       { userId: req.user.id },
     );
     res.status(200).json({
       data: orders,
       pagination: {
-        page: Number(page),
-        limit: Number(limit),
+        page: activePage,
+        limit: activeLimit,
         totalPages,
         totalRecords,
       },

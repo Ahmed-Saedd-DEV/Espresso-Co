@@ -2,30 +2,44 @@ const productService = require("../../services/user/productServices");
 
 exports.getProducts = async (req, res) => {
   try {
-    const { page, limit, sort, order, stock, price, minPrice, maxPrice, search: searchQuery } =
-      req.query;
+    const {
+      page,
+      limit,
+      sort,
+      order,
+      stock,
+      price,
+      minPrice,
+      maxPrice,
+      search: searchQuery,
+    } = req.query;
 
-    const { products, totalPages, totalRecords } =
-      await productService.getProducts(
-        {
-          page,
-          limit,
-          sortBy: sort,
-          order,
-          stock,
-          price,
-          minPrice,
-          maxPrice,
-          search: searchQuery,
-        },
-        { userId: req.user.id },
-      );
+    const {
+      products,
+      totalPages,
+      totalRecords,
+      page: activePage,
+      limit: activeLimit,
+    } = await productService.getProducts(
+      {
+        page,
+        limit,
+        sort,
+        order,
+        stock,
+        price,
+        minPrice,
+        maxPrice,
+        search: searchQuery,
+      },
+      { userId: req.user.id },
+    );
 
     res.json({
       data: products,
       pagination: {
-        page: Number(page),
-        limit: Number(limit),
+        page: activePage,
+        limit: activeLimit,
         totalPages,
         totalRecords,
       },

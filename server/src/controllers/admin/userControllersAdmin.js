@@ -18,11 +18,17 @@ const getAllUsers = async (req, res) => {
       searchQuery,
       role,
       isVerified,
-      sortBy: sort,
+      sort,
       order,
     });
 
-    res.status(200).json(users);
+    res.status(200).json({
+      data: users.users,
+      pagination: users.pagination,
+      totalUsers: users.totalUsers,
+      totalPages: users.totalPages,
+      currentPage: users.currentPage,
+    });
   } catch (error) {
     res.status(400).json({
       message: "Error retrieving users",

@@ -48,7 +48,6 @@ const createOrder = async (orderData, userId) => {
   }
 
   const productIds = [...new Set(mergedItems.map((item) => item.productId))];
-
   const products = await prisma.product.findMany({
     where: {
       id: {
@@ -114,32 +113,38 @@ const createOrder = async (orderData, userId) => {
 };
 
 const getOrders = async (
-  { page, limit, sortBy, order, status },
+  { page, limit, sort: sortField, order, status },
   { userId },
 ) => {
   if (!userId) {
     throw new Error("Authentication required");
   }
 
-  const where = filter.getFiltered( { status, }, { userId },);
-  const totalRecords = await prisma.order.count({
-    where,
-  });
-  const { skip, take, totalPages } = pagination.getPagination(
-    page,
-    limit,
-    totalRecords,
-  );
+  const where = filter.getFiltered({ status }, { userId });
+  const totalRecords = await prisma.order.count({ where });
+  const paginationData = pagination.getPagination(page, limit, totalRecords);
   const whiteList = ["id", "total", "status", "createdAt", "updatedAt"];
-  const sorting = sort.getSorting(sortBy, order, whiteList);
+  const normalizedSort = sort.resolveSortQuery({ sort: sortField, order });
+  const sorting = sort.getSorting(
+    normalizedSort.sort,
+    normalizedSort.order,
+    whiteList,
+  );
   const orders = await prisma.order.findMany({
     where,
     include: { orderItems: true },
-    skip,
-    take,
+    skip: paginationData.skip,
+    take: paginationData.take,
     orderBy: sorting,
   });
-  return { orders, totalPages, totalRecords };
+
+  return {
+    orders,
+    totalPages: paginationData.totalPages,
+    totalRecords,
+    page: paginationData.page,
+    limit: paginationData.limit,
+  };
 };
 
 const getOrderById = async (orderId, userId) => {

@@ -1,6 +1,6 @@
 const prisma = require("../../prisma/prismaClient.js");
 const pagination = require("../../utils/queryFeatures/pagination.js");
-const sort = require("../../utils/queryFeatures/sorting.js");
+const sort = require("../../utils/queryFeatures/sort.js");
 const search = require("../../utils/queryFeatures/search.js");
 
 const validateUserId = (id) => {
@@ -19,11 +19,10 @@ const getAllUsers = async ({
   searchQuery,
   role,
   isVerified,
-  sortBy,
+  sort: sortField,
   order,
 }) => {
   const searchWhiteList = ["name", "email"];
-
   const sortWhiteList = [
     "id",
     "name",
@@ -32,13 +31,8 @@ const getAllUsers = async ({
     "createdAt",
     "updatedAt",
   ];
-
   const searchWhere = search.getSearch(searchQuery, searchWhiteList);
-
-  const where = {
-    ...searchWhere,
-  };
-
+  const where = { ...searchWhere };
   const allowedRoles = ["USER", "ADMIN"];
 
   if (role !== undefined) {
@@ -48,26 +42,24 @@ const getAllUsers = async ({
 
     where.role = role;
   }
+
   if (isVerified !== undefined) {
     where.isVerified = isVerified === "true";
   }
 
-  const totalRecords = await prisma.user.count({
-    where,
-  });
-
-  const { skip, take, totalPages } = pagination.getPagination(
-    page,
-    limit,
-    totalRecords,
+  const totalRecords = await prisma.user.count({ where });
+  const paginationData = pagination.getPagination(page, limit, totalRecords);
+  const normalizedSort = sort.resolveSortQuery({ sort: sortField, order });
+  const orderBy = sort.getSorting(
+    normalizedSort.sort,
+    normalizedSort.order,
+    sortWhiteList,
   );
-
-  const orderBy = sort.getSorting(sortBy, order, sortWhiteList);
 
   const users = await prisma.user.findMany({
     where,
-    skip,
-    take,
+    skip: paginationData.skip,
+    take: paginationData.take,
     orderBy,
     select: {
       id: true,
@@ -83,8 +75,16 @@ const getAllUsers = async ({
   return {
     users,
     totalUsers: totalRecords,
-    totalPages,
-    currentPage: Number(page),
+    totalPages: paginationData.totalPages,
+    currentPage: paginationData.page,
+    page: paginationData.page,
+    limit: paginationData.limit,
+    pagination: {
+      page: paginationData.page,
+      limit: paginationData.limit,
+      totalPages: paginationData.totalPages,
+      totalRecords,
+    },
   };
 };
 
@@ -124,7 +124,6 @@ const updateUser = async (id, userData) => {
   }
 
   const allowedFields = ["name", "email", "role", "isVerified"];
-
   const data = {};
 
   for (const field of allowedFields) {

@@ -14,9 +14,15 @@ exports.getCategories = async (req, res) => {
       categoryId,
       search: searchQuery,
     } = req.query;
-    const { categories, totalPages, totalRecords } =
-      await categoryService.getCategories(
-        {page,
+    const {
+      categories,
+      totalPages,
+      totalRecords,
+      page: activePage,
+      limit: activeLimit,
+    } = await categoryService.getCategories(
+      {
+        page,
         limit,
         sort,
         order,
@@ -25,14 +31,15 @@ exports.getCategories = async (req, res) => {
         minPrice,
         maxPrice,
         categoryId,
-        search: searchQuery,},
-        { userId: req.user.id },
-      );
+        search: searchQuery,
+      },
+      { userId: req.user.id },
+    );
     res.status(200).json({
       data: categories,
       pagination: {
-        page: Number(page),
-        limit: Number(limit),
+        page: activePage,
+        limit: activeLimit,
         totalPages,
         totalRecords,
       },

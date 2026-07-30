@@ -39,7 +39,7 @@ exports.createReview = async (reviewData, userId) => {
 };
 
 exports.getReviews = async (
-  { page, limit, sortBy, order, rating, search: searchQuery },
+  { page, limit, sort: sortField, order, rating, search: searchQuery },
   { userId },
 ) => {
   if (!userId) {
@@ -47,34 +47,37 @@ exports.getReviews = async (
   }
 
   const searchWhiteList = ["comment"];
-
-  const searchWhere = search.getSearch(
-    searchQuery,
-    searchWhiteList,
-  );
+  const searchWhere = search.getSearch(searchQuery, searchWhiteList);
 
   const where = filter.getFiltered(
-    { rating: rating !== undefined ? Number(rating) : undefined, ...searchWhere },
+    {
+      rating: rating !== undefined ? Number(rating) : undefined,
+      ...searchWhere,
+    },
     { userId },
   );
-  const totalRecords = await prisma.review.count({
-    where,
-  });
-
-  const { skip, take, totalPages } = pagination.getPagination(
-    page,
-    limit,
-    totalRecords,
-  );
+  const totalRecords = await prisma.review.count({ where });
+  const paginationData = pagination.getPagination(page, limit, totalRecords);
   const whiteList = ["id", "rating", "createdAt", "updatedAt"];
-  const sorting = sort.getSorting(sortBy, order, whiteList);
+  const normalizedSort = sort.resolveSortQuery({ sort: sortField, order });
+  const sorting = sort.getSorting(
+    normalizedSort.sort,
+    normalizedSort.order,
+    whiteList,
+  );
   const reviews = await prisma.review.findMany({
     where,
     include: { product: true },
-    skip,
-    take,
+    skip: paginationData.skip,
+    take: paginationData.take,
     orderBy: sorting,
   });
 
-  return { reviews, totalPages, totalRecords };
+  return {
+    reviews,
+    totalPages: paginationData.totalPages,
+    totalRecords,
+    page: paginationData.page,
+    limit: paginationData.limit,
+  };
 };

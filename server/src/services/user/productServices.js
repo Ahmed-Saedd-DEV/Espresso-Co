@@ -3,11 +3,12 @@ const pagination = require("../../utils/queryFeatures/pagination");
 const sort = require("../../utils/queryFeatures/sort");
 const filter = require("../../utils/queryFeatures/filter");
 const search = require("../../utils/queryFeatures/search");
+
 exports.getProducts = async (
   {
     page,
     limit,
-    sortBy,
+    sort: sortField,
     order,
     stock,
     price,
@@ -22,12 +23,7 @@ exports.getProducts = async (
   }
 
   const searchWhiteList = ["name", "description"];
-
-  const searchWhere = search.getSearch(
-    searchQuery,
-    searchWhiteList,
-  );
-
+  const searchWhere = search.getSearch(searchQuery, searchWhiteList);
   const where = filter.getFiltered(
     {
       stock: stock !== undefined ? Number(stock) : undefined,
@@ -43,42 +39,29 @@ exports.getProducts = async (
     },
   );
 
-  const totalRecords = await prisma.product.count({
-    where,
-  });
-
-  const { skip, take, totalPages } =
-    pagination.getPagination(
-      page,
-      limit,
-      totalRecords,
-    );
-
-  const whiteList = [
-    "name",
-    "price",
-    "stock",
-    "createdAt",
-    "updatedAt",
-  ];
-
+  const totalRecords = await prisma.product.count({ where });
+  const paginationData = pagination.getPagination(page, limit, totalRecords);
+  const whiteList = ["name", "price", "stock", "createdAt", "updatedAt"];
+  const normalizedSort = sort.resolveSortQuery({ sort: sortField, order });
   const sorting = sort.getSorting(
-    sortBy,
-    order,
+    normalizedSort.sort,
+    normalizedSort.order,
     whiteList,
   );
 
   const products = await prisma.product.findMany({
     where,
-    skip,
-    take,
+    skip: paginationData.skip,
+    take: paginationData.take,
     orderBy: sorting,
   });
 
   return {
     products,
-    totalPages,
+    totalPages: paginationData.totalPages,
     totalRecords,
+    page: paginationData.page,
+    limit: paginationData.limit,
   };
 };
 

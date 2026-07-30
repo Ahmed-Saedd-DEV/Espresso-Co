@@ -2,8 +2,41 @@ const fs = require("fs");
 const path = require("path");
 const prisma = require("../../prisma/prismaClient");
 
+const validateProductData = async (productData) => {
+  const payload = productData || {};
+
+  if (payload.price !== undefined) {
+    const priceValue = Number(payload.price);
+    if (!Number.isFinite(priceValue) || priceValue <= 0) {
+      throw new Error("Price must be greater than 0");
+    }
+  }
+
+  if (payload.stock !== undefined) {
+    const stockValue = Number(payload.stock);
+    if (!Number.isInteger(stockValue) || stockValue < 0) {
+      throw new Error("Stock must be a non-negative integer");
+    }
+  }
+
+  if (payload.categoryId !== undefined && payload.categoryId !== null) {
+    const categoryIdValue = Number(payload.categoryId);
+    if (!Number.isInteger(categoryIdValue) || categoryIdValue <= 0) {
+      throw new Error("Invalid category ID");
+    }
+
+    const category = await prisma.category.findUnique({
+      where: { id: categoryIdValue },
+    });
+    if (!category) {
+      throw new Error("Category not found");
+    }
+  }
+};
+
 exports.createProduct = async (productData, userId) => {
   const { userId: _, ...safeProductData } = productData || {};
+  await validateProductData(safeProductData);
 
   const newProduct = await prisma.product.create({
     data: {
@@ -17,13 +50,16 @@ exports.createProduct = async (productData, userId) => {
 
 exports.updateProduct = async (productId, productData, userId) => {
   const { userId: _, ...safeProductData } = productData || {};
+  await validateProductData(safeProductData);
+
+  const payload = { ...safeProductData };
+  if (payload.categoryId === null) {
+    payload.categoryId = null;
+  }
 
   const updatedProduct = await prisma.product.update({
     where: { id: Number(productId) },
-    data: {
-      ...safeProductData,
-      ...(userId ? { userId: Number(userId) } : {}),
-    },
+    data: payload,
   });
 
   return updatedProduct;
@@ -139,8 +175,7 @@ exports.deleteImageProduct = async (imageId) => {
     const imagePath = path.resolve(existingImage.url);
 
     const isInsideUploads =
-      imagePath === uploadsDir ||
-      imagePath.startsWith(uploadsDir + path.sep);
+      imagePath === uploadsDir || imagePath.startsWith(uploadsDir + path.sep);
 
     if (!isInsideUploads) {
       throw new Error("Invalid image path");

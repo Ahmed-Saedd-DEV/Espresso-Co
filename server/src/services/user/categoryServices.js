@@ -2,9 +2,21 @@ const prisma = require("../../prisma/prismaClient");
 const pagination = require("../../utils/queryFeatures/pagination");
 const sort = require("../../utils/queryFeatures/sort");
 const filter = require("../../utils/queryFeatures/filter");
+const search = require("../../utils/queryFeatures/search");
 
 exports.getCategories = async (
-  { page, limit, sortBy, order, stock, price, minPrice, maxPrice, categoryId, search: searchQuery },
+  {
+    page,
+    limit,
+    sort: sortField,
+    order,
+    stock,
+    price,
+    minPrice,
+    maxPrice,
+    categoryId,
+    search: searchQuery,
+  },
   { userId },
 ) => {
   if (!userId) {
@@ -18,7 +30,7 @@ exports.getCategories = async (
       stock: stock !== undefined ? Number(stock) : undefined,
       price: price !== undefined ? Number(price) : undefined,
       categoryId: categoryId !== undefined ? Number(categoryId) : undefined,
-      ...searchWhere
+      ...searchWhere,
     },
     { userId },
     {
@@ -29,22 +41,29 @@ exports.getCategories = async (
     },
   );
   const totalRecords = await prisma.category.count();
-  const { skip, take, totalPages } = pagination.getPagination(
-    page,
-    limit,
-    totalRecords,
-  );
+  const paginationData = pagination.getPagination(page, limit, totalRecords);
   const whiteList = ["id", "name", "createdAt", "updatedAt"];
-  const sorting = sort.getSorting(sortBy, order, whiteList);
+  const normalizedSort = sort.resolveSortQuery({ sort: sortField, order });
+  const sorting = sort.getSorting(
+    normalizedSort.sort,
+    normalizedSort.order,
+    whiteList,
+  );
   const categories = await prisma.category.findMany({
     include: {
       products: true,
     },
-    skip,
-    take,
+    skip: paginationData.skip,
+    take: paginationData.take,
     orderBy: sorting,
   });
-  return { categories, totalPages, totalRecords };
+  return {
+    categories,
+    totalPages: paginationData.totalPages,
+    totalRecords,
+    page: paginationData.page,
+    limit: paginationData.limit,
+  };
 };
 
 exports.getCategoryById = async (categoryId) => {
