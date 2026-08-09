@@ -20,20 +20,17 @@ exports.getProducts = async (req, res) => {
       totalRecords,
       page: activePage,
       limit: activeLimit,
-    } = await productService.getProducts(
-      {
-        page,
-        limit,
-        sort,
-        order,
-        stock,
-        price,
-        minPrice,
-        maxPrice,
-        search: searchQuery,
-      },
-      { userId: req.user.id },
-    );
+    } = await productService.getProducts({
+      page,
+      limit,
+      sort,
+      order,
+      stock,
+      price,
+      minPrice,
+      maxPrice,
+      search: searchQuery,
+    });
 
     res.json({
       data: products,
@@ -45,7 +42,9 @@ exports.getProducts = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+    });
   }
 };
 

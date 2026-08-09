@@ -1,6 +1,9 @@
 require("dotenv").config();
+
 const express = require("express");
 const app = express();
+
+const redisClient = require("./config/redis");
 
 const {
   authRoutes,
@@ -14,8 +17,12 @@ const {
   uesrRoutesAdmin,
 } = require("./routes/index");
 
+const PORT = process.env.PORT || 5000;
+
 app.use(express.json());
+
 app.use("/uploads", express.static("uploads"));
+
 app.use("/auth", authRoutes);
 app.use("/products", productsRouters);
 app.use("/cart", cartRoutes);
@@ -30,6 +37,19 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-app.listen(5000, () => {
-  console.log(`Server running on port: http://localhost:5000`);
-});
+const startServer = async () => {
+  try {
+    await redisClient.connect();
+
+    console.log("Redis connected");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port: http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

@@ -1,6 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const prisma = require("../../prisma/prismaClient");
+const {
+  invalidateProductsCache,
+} = require("../../utils/cache/productRateLimiter");
 
 const validateProductData = async (productData) => {
   const payload = productData || {};
@@ -45,6 +48,8 @@ exports.createProduct = async (productData, userId) => {
     },
   });
 
+  await invalidateProductsCache();
+
   return newProduct;
 };
 
@@ -61,6 +66,8 @@ exports.updateProduct = async (productId, productData, userId) => {
     where: { id: Number(productId) },
     data: payload,
   });
+
+  await invalidateProductsCache();
 
   return updatedProduct;
 };
@@ -92,6 +99,8 @@ exports.deleteProduct = async (productId, userId) => {
   await prisma.product.delete({
     where: { id: Number(productId) },
   });
+
+  await invalidateProductsCache();
 };
 
 exports.createImageProduct = async (productId, imagePaths) => {

@@ -3,34 +3,34 @@ const pagination = require("../../utils/queryFeatures/pagination");
 const sort = require("../../utils/queryFeatures/sort");
 const filter = require("../../utils/queryFeatures/filter");
 const search = require("../../utils/queryFeatures/search");
+const redisClient = require("../../config/redis");
+const {
+  getProductsCacheKey,
+  getProductsVersion,
+} = require("../../utils/cache/productRateLimiter");
 
-exports.getProducts = async (
-  {
-    page,
-    limit,
-    sort: sortField,
-    order,
-    stock,
-    price,
-    minPrice,
-    maxPrice,
-    search: searchQuery,
-  },
-  { userId },
-) => {
-  if (!userId) {
-    throw new Error("Authentication required");
-  }
-
+exports.getProducts = async ({
+  page,
+  limit,
+  sort: sortField,
+  order,
+  stock,
+  price,
+  minPrice,
+  maxPrice,
+  search: searchQuery,
+}) => {
   const searchWhiteList = ["name", "description"];
+
   const searchWhere = search.getSearch(searchQuery, searchWhiteList);
+
   const where = filter.getFiltered(
     {
       stock: stock !== undefined ? Number(stock) : undefined,
       price: price !== undefined ? Number(price) : undefined,
       ...searchWhere,
     },
-    { userId },
+    {},
     {
       price: {
         min: minPrice,
@@ -39,15 +39,58 @@ exports.getProducts = async (
     },
   );
 
-  const totalRecords = await prisma.product.count({ where });
-  const paginationData = pagination.getPagination(page, limit, totalRecords);
   const whiteList = ["name", "price", "stock", "createdAt", "updatedAt"];
-  const normalizedSort = sort.resolveSortQuery({ sort: sortField, order });
+
+  const normalizedSort = sort.resolveSortQuery({
+    sort: sortField,
+    order,
+  });
+
   const sorting = sort.getSorting(
     normalizedSort.sort,
     normalizedSort.order,
     whiteList,
   );
+
+  const version = await getProductsVersion();
+
+  const cacheKey = getProductsCacheKey({
+    version,
+    page,
+    limit,
+    sort: normalizedSort.sort,
+    order: normalizedSort.order,
+    stock,
+    price,
+    minPrice,
+    maxPrice,
+    search: searchQuery,
+  });
+
+  console.log("CACHE KEY:", cacheKey);
+
+  const cachedProducts = await redisClient.get(cacheKey);
+
+  if (cachedProducts) {
+    console.log("CACHE HIT");
+    return JSON.parse(cachedProducts);
+  }
+
+  console.log("CACHE MISS");
+
+  // 1. Check Redis first
+  const cachedProducts = await redisClient.get(cacheKey);
+
+  if (cachedProducts) {
+    return JSON.parse(cachedProducts);
+  }
+
+  // 2. Redis miss → query database
+  const totalRecords = await prisma.product.count({
+    where,
+  });
+
+  const paginationData = pagination.getPagination(page, limit, totalRecords);
 
   const products = await prisma.product.findMany({
     where,
@@ -56,22 +99,33 @@ exports.getProducts = async (
     orderBy: sorting,
   });
 
-  return {
+  // 3. Build result
+  const result = {
     products,
     totalPages: paginationData.totalPages,
     totalRecords,
     page: paginationData.page,
     limit: paginationData.limit,
   };
+
+  // 4. Store in Redis
+  await redisClient.set(cacheKey, JSON.stringify(result), {
+    EX: 300,
+  });
+
+  return result;
 };
 
-exports.getProductById = async (productId, userId) => {
-  if (!userId) {
-    throw new Error("Authentication required");
+exports.getProductById = async (productId) => {
+  const product = await prisma.product.findUnique({
+    where: {
+      id: Number(productId),
+    },
+  });
+
+  if (!product) {
+    throw new Error("Product not found");
   }
 
-  const product = await prisma.product.findUnique({
-    where: { id: Number(productId), userId },
-  });
   return product;
 };
