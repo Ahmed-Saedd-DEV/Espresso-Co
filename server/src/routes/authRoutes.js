@@ -4,6 +4,13 @@ const router = express.Router();
 const authControllers = require("../controllers/authControllers");
 const authMiddleware = require("../middleware/authMiddleware");
 const validate = require("../middleware/validate");
+const normalizeIp = require("../middleware/rateLimit/normalizeIp");
+const {
+  loginRateLimiter,
+  refreshTokenRateLimiter,
+  forgotPasswordRateLimiter,
+  resendVerificationRateLimiter,
+} = require("../middleware/rateLimit/authRateLimiter.js");
 const {
   registerSchema,
   loginSchema,
@@ -27,12 +34,16 @@ router.get(
 
 router.post(
   "/resend-verification",
+  normalizeIp,
+  resendVerificationRateLimiter,
   validate(resendVerificationSchema),
   authControllers.resendVerificationEmail,
 );
 
 router.post(
   "/forgot-password",
+  normalizeIp,
+  forgotPasswordRateLimiter,
   validate(forgotPasswordSchema),
   authControllers.forgotPassword,
 );
@@ -43,9 +54,15 @@ router.post(
   authControllers.resetPassword,
 );
 
-router.post("/login", validate(loginSchema), authControllers.loginUser);
+router.post(
+  "/login",
+  normalizeIp,
+  loginRateLimiter,
+  validate(loginSchema),
+  authControllers.loginUser,
+);
 
-router.post("/refresh-token", authControllers.refreshToken);
+router.post("/refresh-token", normalizeIp, refreshTokenRateLimiter, authControllers.refreshToken);
 
 router.get("/profile", authMiddleware, authControllers.getProfile);
 

@@ -1,3 +1,5 @@
+const redisClient = require("../../config/redis");
+
 const PRODUCTS_VERSION_KEY = "products:version";
 
 const getProductsCacheKey = ({

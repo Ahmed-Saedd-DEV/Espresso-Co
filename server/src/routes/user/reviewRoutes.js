@@ -5,6 +5,8 @@ const reviewControllers = require("../../controllers/users/reviewControllers");
 const authMiddleware = require("../../middleware/authMiddleware");
 const requireVerifiedUser = require("../../middleware/requireVerifiedUser");
 const validate = require("../../middleware/validate.js");
+const normalizeIp = require("../../middleware/rateLimit/normalizeIp");
+const reviewRateLimiter = require("../../middleware/rateLimit/reviewRateLimiter");
 const {
   createReviewSchema,
   getReviewsQuerySchema,
@@ -12,6 +14,8 @@ const {
 
 router.post(
   "/",
+  normalizeIp,
+  reviewRateLimiter,
   authMiddleware,
   requireVerifiedUser,
   validate(createReviewSchema),
@@ -19,6 +23,8 @@ router.post(
 );
 router.get(
   "/",
+  normalizeIp,
+  reviewRateLimiter,
   authMiddleware,
   requireVerifiedUser,
   validate(getReviewsQuerySchema),

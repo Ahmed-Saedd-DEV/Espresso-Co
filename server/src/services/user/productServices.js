@@ -78,13 +78,6 @@ exports.getProducts = async ({
 
   console.log("CACHE MISS");
 
-  // 1. Check Redis first
-  const cachedProducts = await redisClient.get(cacheKey);
-
-  if (cachedProducts) {
-    return JSON.parse(cachedProducts);
-  }
-
   // 2. Redis miss → query database
   const totalRecords = await prisma.product.count({
     where,
