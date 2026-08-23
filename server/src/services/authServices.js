@@ -14,13 +14,6 @@ const {
 const EMAIL_VERIFICATION_ERROR_MESSAGE =
   "Invalid or expired verification token";
 
-const buildRefreshTokenCookie = (token) => {
-  const secureAttribute =
-    process.env.NODE_ENV === "production" ? "; Secure" : "";
-
-  return `refreshToken=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Strict${secureAttribute}`;
-};
-
 const registerUser = async (userData) => {
   const { email, password, name } = userData;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -174,7 +167,6 @@ const loginUser = async (userData) => {
     message: "Login successful",
     token: accessToken,
     refreshToken,
-    refreshTokenCookie: buildRefreshTokenCookie(refreshToken),
   };
 };
 
@@ -241,7 +233,6 @@ const refreshToken = async (refreshTokenValue) => {
   return {
     token: accessToken,
     refreshToken: newRefreshToken,
-    refreshTokenCookie: buildRefreshTokenCookie(newRefreshToken),
   };
 };
 

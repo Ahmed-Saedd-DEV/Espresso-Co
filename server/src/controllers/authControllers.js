@@ -1,6 +1,14 @@
 const authServices = require("../services/authServices");
 const { parseCookies } = require("../utils/authUtils");
 
+const refreshTokenCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+  path: "/auth",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
 exports.registerUser = async (req, res) => {
   try {
     const user = await authServices.registerUser(req.body);
@@ -72,12 +80,9 @@ exports.resetPassword = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const result = await authServices.loginUser(req.body);
-    res.setHeader("Set-Cookie", result.refreshTokenCookie);
+    res.cookie("refreshToken", result.refreshToken, refreshTokenCookieOptions);
 
-    res.json({
-      message: result.message,
-      token: result.token,
-    });
+    res.json({ message: result.message, token: result.token });
   } catch (error) {
     res.status(401).json({ error: error.message });
   }
@@ -93,7 +98,11 @@ exports.refreshToken = async (req, res) => {
     }
 
     const refreshTokenData = await authServices.refreshToken(refreshTokenValue);
-    res.setHeader("Set-Cookie", refreshTokenData.refreshTokenCookie);
+    res.cookie(
+      "refreshToken",
+      refreshTokenData.refreshToken,
+      refreshTokenCookieOptions,
+    );
     res.json({ token: refreshTokenData.token });
   } catch (error) {
     res.status(401).json({ error: error.message });
@@ -116,31 +125,32 @@ exports.getProfile = async (req, res) => {
 exports.logoutUser = async (req, res) => {
   try {
     const { refreshToken } = parseCookies(req);
-    if (!refreshToken) {
-      return res.status(401).json({
-        error: "Refresh token is required",
-      });
+
+    // Best-effort: if a refresh token exists, attempt to revoke it server-side.
+    // Do not expose failure details to the client; always clear the cookie and return success.
+    if (refreshToken) {
+      try {
+        await authServices.logoutUser(refreshToken);
+      } catch (err) {
+        // swallow errors to avoid leaking token state
+      }
     }
 
-    await authServices.logoutUser(refreshToken);
-
     res.clearCookie("refreshToken", {
       httpOnly: true,
       sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-      path: "/",
+      path: "/auth",
     });
-    res.json({ message: "Logout successful" });
+    res.status(200).json({ message: "Logout successful" });
   } catch (error) {
+    // On unexpected errors, still clear the cookie and respond with success
     res.clearCookie("refreshToken", {
       httpOnly: true,
       sameSite: "strict",
       secure: process.env.NODE_ENV === "production",
-      path: "/",
+      path: "/auth",
     });
-    res.status(200).json({
-        message: "Logout successful",
-    });
-}
+    res.status(200).json({ message: "Logout successful" });
+  }
 };
-

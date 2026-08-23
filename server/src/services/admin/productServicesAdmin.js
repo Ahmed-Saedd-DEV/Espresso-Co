@@ -1,9 +1,11 @@
 const fs = require("fs");
-const path = require("path");
 const prisma = require("../../prisma/prismaClient");
 const {
   invalidateProductsCache,
 } = require("../../utils/cache/productRateLimiter");
+const {
+  getSafeProductImagePath,
+} = require("../../utils/fileUpload/productImagePath");
 
 const validateProductData = async (productData) => {
   const payload = productData || {};
@@ -87,12 +89,15 @@ exports.deleteProduct = async (productId, userId) => {
   }
 
   for (const image of existingProduct.images || []) {
-    const imagePath = path.resolve(image.url);
-
     try {
+      const imagePath = getSafeProductImagePath(image.url);
+
       await fs.promises.unlink(imagePath);
     } catch (error) {
-      console.error(`Failed to delete image file: ${imagePath}`, error.message);
+      console.error(
+        `Failed to delete image file: ${image.url}`,
+        error.message,
+      );
     }
   }
 
@@ -180,15 +185,7 @@ exports.deleteImageProduct = async (imageId) => {
   }
 
   if (existingImage.url) {
-    const uploadsDir = path.resolve("uploads/products");
-    const imagePath = path.resolve(existingImage.url);
-
-    const isInsideUploads =
-      imagePath === uploadsDir || imagePath.startsWith(uploadsDir + path.sep);
-
-    if (!isInsideUploads) {
-      throw new Error("Invalid image path");
-    }
+    const imagePath = getSafeProductImagePath(existingImage.url);
 
     try {
       await fs.promises.unlink(imagePath);
