@@ -20,6 +20,8 @@ const {
   uesrRoutesAdmin,
 } = require("./routes/index");
 
+const errorHandler = require("./middleware/errorHandler");
+
 const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   process.env.CLIENT_URL,
@@ -68,6 +70,8 @@ app.use("/categories", categoryRoutes);
 app.use("/admin/categories", categoryRoutesAdmin);
 app.use("/admin/products", productRoutesAdmin);
 app.use("/admin/users", uesrRoutesAdmin);
+
+app.use(errorHandler);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });

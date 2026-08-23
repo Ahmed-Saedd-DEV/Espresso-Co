@@ -3,6 +3,7 @@ const pagination = require("../../utils/queryFeatures/pagination");
 const sort = require("../../utils/queryFeatures/sort");
 const filter = require("../../utils/queryFeatures/filter");
 const search = require("../../utils/queryFeatures/search");
+const AppError = require("../../utils/errors/AppError");
 
 exports.getCategories = async (
   {
@@ -20,7 +21,7 @@ exports.getCategories = async (
   { userId },
 ) => {
   if (!userId) {
-    throw new Error("Authentication required");
+    throw new AppError("Authentication required", 401);
   }
 
   const searchWhiteList = ["name"];
@@ -75,7 +76,7 @@ exports.getCategoryById = async (categoryId) => {
   });
 
   if (!category) {
-    throw new Error("Category not found");
+    throw new AppError("Category not found", 404);
   }
 
   return category;

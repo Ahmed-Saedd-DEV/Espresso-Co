@@ -1,27 +1,16 @@
 const orderServices = require("../../services/user/orderServices.js");
 
-exports.createOrder = async (req, res) => {
+exports.createOrder = async (req, res, next) => {
   try {
     const newOrder = await orderServices.createOrder(req.body, req.user.id);
 
     res.status(201).json(newOrder);
   } catch (error) {
-    const statusCode =
-      error.message === "Authentication required"
-        ? 401
-        : error.message === "Insufficient stock" ||
-            error.message === "Invalid order items" ||
-            error.message === "Invalid total amount"
-          ? 409
-          : 400;
-
-    res.status(statusCode).json({
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-exports.getOrders = async (req, res) => {
+exports.getOrders = async (req, res, next) => {
   try {
     const { page, limit, sort, order, status } = req.query;
     const {
@@ -44,13 +33,11 @@ exports.getOrders = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(401).json({
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-exports.getOrderById = async (req, res) => {
+exports.getOrderById = async (req, res, next) => {
   try {
     const order = await orderServices.getOrderById(
       req.params.orderId,
@@ -58,20 +45,11 @@ exports.getOrderById = async (req, res) => {
     );
     res.status(200).json(order);
   } catch (error) {
-    const statusCode =
-      error.message === "Invalid order ID"
-        ? 400
-        : error.message === "Authentication required"
-          ? 401
-          : 404;
-
-    res.status(statusCode).json({
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-exports.updateOrderStatus = async (req, res) => {
+exports.updateOrderStatus = async (req, res, next) => {
   try {
     const updatedOrder = await orderServices.updateOrderStatus(
       req.params.orderId,
@@ -80,17 +58,6 @@ exports.updateOrderStatus = async (req, res) => {
     );
     res.status(200).json(updatedOrder);
   } catch (error) {
-    const statusCode =
-      error.message === "Authentication required"
-        ? 401
-        : error.message === "Invalid order ID"
-          ? 400
-          : error.message === "Order not found"
-            ? 404
-            : 400;
-
-    res.status(statusCode).json({
-      error: error.message,
-    });
+    next(error);
   }
 };

@@ -3,6 +3,7 @@ const orderUtils = require("../../utils/orderUtils");
 const pagination = require("../../utils/queryFeatures/pagination");
 const sort = require("../../utils/queryFeatures/sort");
 const filter = require("../../utils/queryFeatures/filter");
+const AppError = require("../../utils/errors/AppError");
 
 const getAllOrders = async ({
   page,
@@ -45,7 +46,7 @@ const getOrderById = async (orderId) => {
   const id = Number(orderId);
 
   if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Invalid order ID");
+    throw new AppError("Invalid order ID", 400);
   }
 
   const order = await prisma.order.findUnique({
@@ -56,7 +57,7 @@ const getOrderById = async (orderId) => {
   });
 
   if (!order) {
-    throw new Error("Order not found");
+    throw new AppError("Order not found", 404);
   }
 
   return order;
@@ -66,7 +67,7 @@ const updateOrderStatus = async (orderId, status) => {
   const id = Number(orderId);
 
   if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Invalid order ID");
+    throw new AppError("Invalid order ID", 400);
   }
 
   const normalizedStatus = (status || "").toUpperCase();
@@ -86,7 +87,7 @@ const updateOrderStatus = async (orderId, status) => {
   };
 
   if (!allowedStatuses.includes(normalizedStatus)) {
-    throw new Error("Invalid status");
+    throw new AppError("Invalid status", 400);
   }
 
   return prisma.$transaction(async (tx) => {
@@ -98,14 +99,14 @@ const updateOrderStatus = async (orderId, status) => {
     });
 
     if (!existingOrder) {
-      throw new Error("Order not found");
+      throw new AppError("Order not found", 404);
     }
 
     const currentStatus = existingOrder.status.toUpperCase();
     const allowedNextStatuses = validTransitions[currentStatus] || [];
 
     if (!allowedNextStatuses.includes(normalizedStatus)) {
-      throw new Error("Invalid status transition");
+      throw new AppError("Invalid status transition", 409);
     }
 
     if (normalizedStatus === "CANCELLED" && currentStatus !== "CANCELLED") {
@@ -131,7 +132,7 @@ const deleteOrder = async (orderId) => {
   const id = Number(orderId);
 
   if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Invalid order ID");
+    throw new AppError("Invalid order ID", 400);
   }
 
   return prisma.$transaction(async (tx) => {
@@ -141,11 +142,11 @@ const deleteOrder = async (orderId) => {
     });
 
     if (!existingOrder) {
-      throw new Error("Order not found");
+      throw new AppError("Order not found", 404);
     }
 
     if (existingOrder.status === "CANCELLED") {
-      throw new Error("Order is already cancelled");
+      throw new AppError("Order is already cancelled", 409);
     }
 
     const orderItems = existingOrder.orderItems.map((item) => ({

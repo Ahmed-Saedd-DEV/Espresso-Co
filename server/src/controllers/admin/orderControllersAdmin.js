@@ -1,6 +1,6 @@
 const orderServicesAdmin = require("../../services/admin/orderServicesAdmin");
 
-exports.getAllOrders = async (req, res) => {
+exports.getAllOrders = async (req, res, next) => {
   try {
     const { page, limit, sort, order, status } = req.query;
     const {
@@ -26,27 +26,21 @@ exports.getAllOrders = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-exports.getOrderById = async (req, res) => {
+exports.getOrderById = async (req, res, next) => {
   const { orderId } = req.params;
   try {
     const order = await orderServicesAdmin.getOrderById(orderId);
     res.status(200).json(order);
   } catch (error) {
-    const statusCode =
-      error.message === "Order not found" ||
-      error.message === "Invalid order ID"
-        ? 404
-        : 500;
-
-    res.status(statusCode).json({ message: error.message });
+    next(error);
   }
 };
 
-exports.updateOrderStatus = async (req, res) => {
+exports.updateOrderStatus = async (req, res, next) => {
   const { orderId } = req.params;
   const { status } = req.body;
   try {
@@ -56,31 +50,16 @@ exports.updateOrderStatus = async (req, res) => {
     );
     res.status(200).json(updatedOrder);
   } catch (error) {
-    const statusCode =
-      error.message === "Order not found" ||
-      error.message === "Invalid order ID"
-        ? 404
-        : error.message === "Invalid status" ||
-            error.message === "Invalid status transition"
-          ? 400
-          : 500;
-
-    res.status(statusCode).json({ message: error.message });
+    next(error);
   }
 };
 
-exports.deleteOrder = async (req, res) => {
+exports.deleteOrder = async (req, res, next) => {
   const { orderId } = req.params;
   try {
     const updatedOrder = await orderServicesAdmin.deleteOrder(orderId);
     res.status(200).json(updatedOrder);
   } catch (error) {
-    const statusCode =
-      error.message === "Order not found" ||
-      error.message === "Invalid order ID"
-        ? 404
-        : 500;
-
-    res.status(statusCode).json({ message: error.message });
+    next(error);
   }
 };

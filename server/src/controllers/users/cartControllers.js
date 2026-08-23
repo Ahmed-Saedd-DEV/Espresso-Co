@@ -1,15 +1,15 @@
 const cartService = require("../../services/user/cartServices");
 
-exports.getCart = async (req, res) => {
+exports.getCart = async (req, res, next) => {
   try {
     const cart = await cartService.getCart(req.user.id);
     res.json(cart);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.addToCart = async (req, res) => {
+exports.addToCart = async (req, res, next) => {
   try {
     const { productId, quantity } = req.body;
     const cartItem = await cartService.addToCart(
@@ -19,20 +19,11 @@ exports.addToCart = async (req, res) => {
     );
     res.status(201).json(cartItem);
   } catch (error) {
-    const statusCode =
-      error.message === "Product not found"
-        ? 404
-        : error.message === "Insufficient stock" ||
-            error.message === "Invalid product ID" ||
-            error.message === "Invalid quantity"
-          ? 409
-          : 400;
-
-    res.status(statusCode).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.updateCartItem = async (req, res) => {
+exports.updateCartItem = async (req, res, next) => {
   try {
     const { productId } = req.params;
     const { quantity } = req.body;
@@ -43,26 +34,16 @@ exports.updateCartItem = async (req, res) => {
     );
     res.json(updatedCartItem);
   } catch (error) {
-    const statusCode =
-      error.message === "Cart item not found"
-        ? 404
-        : error.message === "Insufficient stock" ||
-            error.message === "Invalid quantity" ||
-            error.message === "Invalid product ID"
-          ? 409
-          : 400;
-
-    res.status(statusCode).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.removeFromCart = async (req, res) => {
+exports.removeFromCart = async (req, res, next) => {
   try {
     const { productId } = req.params;
     await cartService.removeFromCart(req.user.id, productId);
     res.json({ message: "Item removed from cart" });
   } catch (error) {
-    const statusCode = error.message === "Cart item not found" ? 404 : 400;
-    res.status(statusCode).json({ error: error.message });
+    next(error);
   }
 };

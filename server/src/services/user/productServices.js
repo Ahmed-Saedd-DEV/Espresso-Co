@@ -8,6 +8,7 @@ const {
   getProductsCacheKey,
   getProductsVersion,
 } = require("../../utils/cache/productRateLimiter");
+const AppError = require("../../utils/errors/AppError");
 
 exports.getProducts = async ({
   page,
@@ -117,7 +118,7 @@ exports.getProductById = async (productId) => {
   });
 
   if (!product) {
-    throw new Error("Product not found");
+    throw new AppError("Product not found", 404);
   }
 
   return product;

@@ -1,16 +1,16 @@
 const reviewServices = require("../../services/user/reviewServices");
 
-exports.createReview = async (req, res) => {
+exports.createReview = async (req, res, next) => {
   try {
     const review = await reviewServices.createReview(req.body, req.user?.id);
     res.status(201).json(review);
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.getReviews = async (req, res) => {
+exports.getReviews = async (req, res, next) => {
   try {
     const { page, limit, sort, order, rating, search: searchQuery } = req.query;
 
@@ -36,6 +36,6 @@ exports.getReviews = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };

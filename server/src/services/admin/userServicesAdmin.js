@@ -2,12 +2,13 @@ const prisma = require("../../prisma/prismaClient.js");
 const pagination = require("../../utils/queryFeatures/pagination.js");
 const sort = require("../../utils/queryFeatures/sort.js");
 const search = require("../../utils/queryFeatures/search.js");
+const AppError = require("../../utils/errors/AppError");
 
 const validateUserId = (id) => {
   const userId = Number(id);
 
   if (!Number.isInteger(userId) || userId <= 0) {
-    throw new Error("Invalid user ID");
+    throw new AppError("Invalid user ID", 400);
   }
 
   return userId;
@@ -37,7 +38,7 @@ const getAllUsers = async ({
 
   if (role !== undefined) {
     if (!allowedRoles.includes(role)) {
-      throw new Error("Invalid role");
+      throw new AppError("Invalid role", 400);
     }
 
     where.role = role;
@@ -120,7 +121,7 @@ const updateUser = async (id, userData) => {
   });
 
   if (!existingUser) {
-    throw new Error("User not found");
+    throw new AppError("User not found", 404);
   }
 
   const allowedFields = ["name", "email", "role", "isVerified"];
@@ -133,20 +134,20 @@ const updateUser = async (id, userData) => {
   }
 
   if (Object.keys(data).length === 0) {
-    throw new Error("No valid fields provided");
+    throw new AppError("No valid fields provided", 400);
   }
 
   if (data.role !== undefined) {
     const allowedRoles = ["USER", "ADMIN"];
 
     if (!allowedRoles.includes(data.role)) {
-      throw new Error("Invalid role");
+      throw new AppError("Invalid role", 400);
     }
   }
 
   if (data.isVerified !== undefined) {
     if (typeof data.isVerified !== "boolean") {
-      throw new Error("isVerified must be a boolean");
+      throw new AppError("isVerified must be a boolean", 400);
     }
   }
 
@@ -180,7 +181,7 @@ const deleteUser = async (id) => {
   });
 
   if (!existingUser) {
-    throw new Error("User not found");
+    throw new AppError("User not found", 404);
   }
 
   return await prisma.user.delete({

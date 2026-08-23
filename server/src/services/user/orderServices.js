@@ -4,16 +4,17 @@ const orderUtils = require("../../utils/orderUtils");
 const pagination = require("../../utils/queryFeatures/pagination");
 const sort = require("../../utils/queryFeatures/sort");
 const filter = require("../../utils/queryFeatures/filter");
+const AppError = require("../../utils/errors/AppError");
 
 const createOrder = async (orderData, userId) => {
   if (!userId) {
-    throw new Error("Authentication required");
+    throw new AppError("Authentication required", 401);
   }
 
   const items = orderData.items;
 
   if (!Array.isArray(items) || items.length === 0) {
-    throw new Error("No order items provided");
+    throw new AppError("No order items provided", 400);
   }
 
   const normalizedItems = items.map((item) => ({
@@ -44,7 +45,7 @@ const createOrder = async (orderData, userId) => {
   );
 
   if (invalidItem) {
-    throw new Error("Invalid order items");
+    throw new AppError("Invalid order items", 400);
   }
 
   const productIds = [...new Set(mergedItems.map((item) => item.productId))];
@@ -57,7 +58,7 @@ const createOrder = async (orderData, userId) => {
   });
 
   if (products.length !== productIds.length) {
-    throw new Error("One or more products not found");
+    throw new AppError("One or more products not found", 404);
   }
 
   const orderItems = mergedItems.map((item) => {
@@ -76,7 +77,7 @@ const createOrder = async (orderData, userId) => {
   );
 
   if (total.lte(0)) {
-    throw new Error("Invalid total amount");
+    throw new AppError("Invalid total amount", 400);
   }
 
   return prisma.$transaction(async (tx) => {
@@ -117,7 +118,7 @@ const getOrders = async (
   { userId },
 ) => {
   if (!userId) {
-    throw new Error("Authentication required");
+    throw new AppError("Authentication required", 401);
   }
 
   const where = filter.getFiltered({ status }, { userId });
@@ -149,13 +150,13 @@ const getOrders = async (
 
 const getOrderById = async (orderId, userId) => {
   if (!userId) {
-    throw new Error("Authentication required");
+    throw new AppError("Authentication required", 401);
   }
 
   const id = Number(orderId);
 
   if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Invalid order ID");
+    throw new AppError("Invalid order ID", 400);
   }
 
   return prisma.order.findFirst({
@@ -171,19 +172,19 @@ const getOrderById = async (orderId, userId) => {
 
 const updateOrderStatus = async (orderId, status, userId) => {
   if (!userId) {
-    throw new Error("Authentication required");
+    throw new AppError("Authentication required", 401);
   }
 
   const id = Number(orderId);
 
   if (!Number.isInteger(id) || id <= 0) {
-    throw new Error("Invalid order ID");
+    throw new AppError("Invalid order ID", 400);
   }
 
   const normalizedStatus = (status || "").toUpperCase();
 
   if (normalizedStatus !== "CANCELLED") {
-    throw new Error("Only cancellation is allowed for users");
+    throw new AppError("Only cancellation is allowed for users", 403);
   }
 
   return prisma.$transaction(async (tx) => {
@@ -197,11 +198,11 @@ const updateOrderStatus = async (orderId, status, userId) => {
     });
 
     if (!existingOrder || existingOrder.userId !== userId) {
-      throw new Error("Order not found");
+      throw new AppError("Order not found", 404);
     }
 
     if (existingOrder.status !== "PENDING") {
-      throw new Error("Only pending orders can be cancelled");
+      throw new AppError("Only pending orders can be cancelled", 409);
     }
 
     const orderItems = existingOrder.orderItems.map((item) => ({

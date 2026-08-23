@@ -6,6 +6,7 @@ const {
 const {
   getSafeProductImagePath,
 } = require("../../utils/fileUpload/productImagePath");
+const AppError = require("../../utils/errors/AppError");
 
 const validateProductData = async (productData) => {
   const payload = productData || {};
@@ -13,28 +14,28 @@ const validateProductData = async (productData) => {
   if (payload.price !== undefined) {
     const priceValue = Number(payload.price);
     if (!Number.isFinite(priceValue) || priceValue <= 0) {
-      throw new Error("Price must be greater than 0");
+      throw new AppError("Price must be greater than 0", 400);
     }
   }
 
   if (payload.stock !== undefined) {
     const stockValue = Number(payload.stock);
     if (!Number.isInteger(stockValue) || stockValue < 0) {
-      throw new Error("Stock must be a non-negative integer");
+      throw new AppError("Stock must be a non-negative integer", 400);
     }
   }
 
   if (payload.categoryId !== undefined && payload.categoryId !== null) {
     const categoryIdValue = Number(payload.categoryId);
     if (!Number.isInteger(categoryIdValue) || categoryIdValue <= 0) {
-      throw new Error("Invalid category ID");
+      throw new AppError("Invalid category ID", 400);
     }
 
     const category = await prisma.category.findUnique({
       where: { id: categoryIdValue },
     });
     if (!category) {
-      throw new Error("Category not found");
+      throw new AppError("Category not found", 404);
     }
   }
 };
@@ -81,11 +82,11 @@ exports.deleteProduct = async (productId, userId) => {
   });
 
   if (!existingProduct) {
-    throw new Error("Product not found");
+    throw new AppError("Product not found", 404);
   }
 
   if (userId && existingProduct.userId !== Number(userId)) {
-    throw new Error("Unauthorized");
+    throw new AppError("Unauthorized", 403);
   }
 
   for (const image of existingProduct.images || []) {
@@ -116,13 +117,13 @@ exports.createImageProduct = async (productId, imagePaths) => {
   });
 
   if (!product) {
-    throw new Error("Product not found");
+    throw new AppError("Product not found", 404);
   }
 
   const uniqueImagePaths = [...new Set(imagePaths)];
 
   if (uniqueImagePaths.length !== imagePaths.length) {
-    throw new Error("Duplicate image URLs are not allowed");
+    throw new AppError("Duplicate image URLs are not allowed", 409);
   }
 
   const existingImages = await prisma.image.findMany({
@@ -141,7 +142,7 @@ exports.createImageProduct = async (productId, imagePaths) => {
   );
 
   if (duplicateExisting) {
-    throw new Error("This image already exists for this product");
+    throw new AppError("This image already exists for this product", 409);
   }
 
   const currentImageCount = await prisma.image.count({
@@ -151,7 +152,7 @@ exports.createImageProduct = async (productId, imagePaths) => {
   });
 
   if (currentImageCount + uniqueImagePaths.length > 5) {
-    throw new Error("A product can have at most 5 images");
+    throw new AppError("A product can have at most 5 images", 409);
   }
 
   await prisma.image.createMany({
@@ -178,7 +179,7 @@ exports.deleteImageProduct = async (imageId) => {
   });
 
   if (!existingImage) {
-    throw new Error("Image not found");
+    throw new AppError("Image not found", 404);
   }
 
   if (existingImage.url) {

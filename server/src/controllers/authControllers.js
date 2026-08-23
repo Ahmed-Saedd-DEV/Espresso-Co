@@ -9,16 +9,16 @@ const refreshTokenCookieOptions = {
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
-exports.registerUser = async (req, res) => {
+exports.registerUser = async (req, res, next) => {
   try {
     const user = await authServices.registerUser(req.body);
     res.status(201).json(user);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.verifyEmail = async (req, res) => {
+exports.verifyEmail = async (req, res, next) => {
   try {
     const { token } = req.query;
 
@@ -31,23 +31,21 @@ exports.verifyEmail = async (req, res) => {
     const result = await authServices.verifyEmail(token);
     res.json(result);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
-exports.resendVerificationEmail = async (req, res) => {
+exports.resendVerificationEmail = async (req, res, next) => {
   try {
     const result = await authServices.resendVerificationEmail(req.body.email);
 
     res.json(result);
-  } catch (err) {
-    res.status(400).json({
-      message: err.message,
-    });
+  } catch (error) {
+    next(error);
   }
 };
 
-exports.forgotPassword = async (req, res) => {
+exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
     if (!email) {
@@ -56,11 +54,11 @@ exports.forgotPassword = async (req, res) => {
     const result = await authServices.forgotPassword(email);
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.resetPassword = async (req, res) => {
+exports.resetPassword = async (req, res, next) => {
   try {
     const { token, newPassword } = req.body;
 
@@ -73,22 +71,22 @@ exports.resetPassword = async (req, res) => {
     const result = await authServices.resetPassword(token, newPassword);
     res.json(result);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.loginUser = async (req, res) => {
+exports.loginUser = async (req, res, next) => {
   try {
     const result = await authServices.loginUser(req.body);
     res.cookie("refreshToken", result.refreshToken, refreshTokenCookieOptions);
 
     res.json({ message: result.message, token: result.token });
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.refreshToken = async (req, res) => {
+exports.refreshToken = async (req, res, next) => {
   try {
     const cookies = parseCookies(req);
     const refreshTokenValue = cookies.refreshToken;
@@ -105,11 +103,11 @@ exports.refreshToken = async (req, res) => {
     );
     res.json({ token: refreshTokenData.token });
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.getProfile = async (req, res) => {
+exports.getProfile = async (req, res, next) => {
   try {
     if (!req.user?.id) {
       return res.status(401).json({ error: "Authentication required" });
@@ -118,7 +116,7 @@ exports.getProfile = async (req, res) => {
     const user = await authServices.getProfile(req.user.id);
     res.json(user);
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    next(error);
   }
 };
 

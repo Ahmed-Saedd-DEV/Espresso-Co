@@ -1,6 +1,6 @@
 const categoryService = require("../../services/user/categoryServices");
 
-exports.getCategories = async (req, res) => {
+exports.getCategories = async (req, res, next) => {
   try {
     const {
       page,
@@ -45,15 +45,15 @@ exports.getCategories = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.getCategoryById = async (req, res) => {
+exports.getCategoryById = async (req, res, next) => {
   try {
     const category = await categoryService.getCategoryById(req.params.id);
     res.json(category);
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    next(error);
   }
 };

@@ -1,6 +1,6 @@
 const productService = require("../../services/user/productServices");
 
-exports.getProducts = async (req, res) => {
+exports.getProducts = async (req, res, next) => {
   try {
     const {
       page,
@@ -42,13 +42,11 @@ exports.getProducts = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-exports.getProductById = async (req, res) => {
+exports.getProductById = async (req, res, next) => {
   try {
     const product = await productService.getProductById(
       req.params.id,
@@ -56,6 +54,6 @@ exports.getProductById = async (req, res) => {
     );
     res.json(product);
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    next(error);
   }
 };

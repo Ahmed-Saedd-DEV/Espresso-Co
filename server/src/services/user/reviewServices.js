@@ -3,16 +3,17 @@ const pagination = require("../../utils/queryFeatures/pagination");
 const sort = require("../../utils/queryFeatures/sort");
 const filter = require("../../utils/queryFeatures/filter");
 const search = require("../../utils/queryFeatures/search");
+const AppError = require("../../utils/errors/AppError");
 
 exports.createReview = async (reviewData, userId) => {
   if (!userId) {
-    throw new Error("Authentication required");
+    throw new AppError("Authentication required", 401);
   }
 
   const { productId, rating, comment } = reviewData || {};
 
   if (!productId) {
-    throw new Error("productId is required");
+    throw new AppError("productId is required", 400);
   }
 
   const normalizedRating = Number(rating);
@@ -21,7 +22,7 @@ exports.createReview = async (reviewData, userId) => {
     normalizedRating < 1 ||
     normalizedRating > 5
   ) {
-    throw new Error("rating must be an integer between 1 and 5");
+    throw new AppError("rating must be an integer between 1 and 5", 400);
   }
 
   return await prisma.review.create({
@@ -43,7 +44,7 @@ exports.getReviews = async (
   { userId },
 ) => {
   if (!userId) {
-    throw new Error("Authentication required");
+    throw new AppError("Authentication required", 401);
   }
 
   const searchWhiteList = ["comment"];

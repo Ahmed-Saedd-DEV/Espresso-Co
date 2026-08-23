@@ -10,6 +10,7 @@ const {
   sendVerificationEmail,
   sendPasswordResetEmail,
 } = require("./mail.service");
+const AppError = require("../utils/errors/AppError");
 
 const EMAIL_VERIFICATION_ERROR_MESSAGE =
   "Invalid or expired verification token";
@@ -19,7 +20,7 @@ const registerUser = async (userData) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const emailExists = await prisma.user.findUnique({ where: { email } });
   if (emailExists) {
-    throw new Error("Email already exists");
+    throw new AppError("Email already exists", 409);
   }
 
   const existingUser = await prisma.user.create({
@@ -52,14 +53,14 @@ const verifyEmail = async (token) => {
     !storedToken.expiresAt ||
     storedToken.expiresAt < new Date()
   ) {
-    throw new Error("Invalid verification token");
+    throw new AppError("Invalid verification token", 400);
   }
   if (!storedToken.jti || storedToken.jti !== payload.jti) {
-    throw new Error("Invalid verification token");
+    throw new AppError("Invalid verification token", 400);
   }
   const isMatch = await bcrypt.compare(token, storedToken.tokenHash);
   if (!isMatch) {
-    throw new Error("Invalid verification token");
+    throw new AppError("Invalid verification token", 400);
   }
   await prisma.user.update({
     where: { id: payload.id },
@@ -78,7 +79,7 @@ const resendVerificationEmail = async (email) => {
     };
   }
   if (user.isVerified) {
-    throw new Error("Email is already verified");
+    throw new AppError("Email is already verified", 409);
   }
   await prisma.emailVerificationToken.deleteMany({
     where: { userId: user.id },
@@ -92,7 +93,7 @@ const resendVerificationEmail = async (email) => {
 const forgotPassword = async (email) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError("User not found", 404);
   }
   const passwordResetToken = await prisma.passwordResetToken.deleteMany({
     where: { userId: user.id },
@@ -115,14 +116,14 @@ const resetPassword = async (token, newPassword) => {
     !storedToken.expiresAt ||
     storedToken.expiresAt < new Date()
   ) {
-    throw new Error("Invalid password reset token");
+    throw new AppError("Invalid password reset token", 400);
   }
   if (!storedToken.jti || storedToken.jti !== payload.jti) {
-    throw new Error("Invalid password reset token");
+    throw new AppError("Invalid password reset token", 400);
   }
   const isMatch = await bcrypt.compare(token, storedToken.tokenHash);
   if (!isMatch) {
-    throw new Error("Invalid password reset token");
+    throw new AppError("Invalid password reset token", 400);
   }
   await prisma.user.update({
     where: { id: payload.id },
@@ -140,12 +141,12 @@ const loginUser = async (userData) => {
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
-    throw new Error("Invalid credentials");
+    throw new AppError("Invalid credentials", 401);
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new Error("Invalid credentials");
+    throw new AppError("Invalid credentials", 401);
   }
 
   const accessToken = jwt.accessToken(buildAccessTokenPayload(user));
@@ -179,25 +180,25 @@ const refreshToken = async (refreshTokenValue) => {
   });
 
   if (!storedToken) {
-    throw new Error("Invalid refresh token");
+    throw new AppError("Invalid refresh token", 401);
   }
 
   if (storedToken.revoked) {
-    throw new Error("Refresh token revoked");
+    throw new AppError("Refresh token revoked", 401);
   }
 
   if (storedToken.expiresAt < new Date()) {
-    throw new Error("Refresh token expired");
+    throw new AppError("Refresh token expired", 401);
   }
 
   if (storedToken.userId !== decoded.id) {
-    throw new Error("Invalid refresh token");
+    throw new AppError("Invalid refresh token", 401);
   }
 
   const match = await bcrypt.compare(refreshTokenValue, storedToken.tokenHash);
 
   if (!match) {
-    throw new Error("Invalid refresh token");
+    throw new AppError("Invalid refresh token", 401);
   }
 
   const user = await prisma.user.findUnique({
@@ -206,7 +207,7 @@ const refreshToken = async (refreshTokenValue) => {
   });
 
   if (!user) {
-    throw new Error("Invalid refresh token");
+    throw new AppError("Invalid refresh token", 401);
   }
 
   const accessToken = jwt.accessToken(buildAccessTokenPayload(user));
@@ -240,7 +241,7 @@ const getProfile = async (userId) => {
   const parsedUserId = Number(userId);
 
   if (!Number.isInteger(parsedUserId)) {
-    throw new Error("Valid user ID is required");
+    throw new AppError("Valid user ID is required", 400);
   }
 
   const user = await prisma.user.findUnique({
@@ -249,7 +250,7 @@ const getProfile = async (userId) => {
   });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError("User not found", 404);
   }
 
   return user;
@@ -258,7 +259,7 @@ const getProfile = async (userId) => {
 const logoutUser = async (refreshToken) => {
   const payload = jwt.verifyRefreshToken(refreshToken);
   if (!payload || !payload.jti || !payload.id) {
-    throw new Error("Invalid refresh token");
+    throw new AppError("Invalid refresh token", 401);
   }
 
   const tokens = await prisma.refreshToken.findUnique({
@@ -267,25 +268,25 @@ const logoutUser = async (refreshToken) => {
     },
   });
   if (!tokens) {
-    throw new Error("Invalid refresh token");
+    throw new AppError("Invalid refresh token", 401);
   }
 
   if (tokens.revoked) {
-    throw new Error("Refresh token revoked");
+    throw new AppError("Refresh token revoked", 401);
   }
 
   if (tokens.expiresAt < new Date()) {
-    throw new Error("Refresh token expired");
+    throw new AppError("Refresh token expired", 401);
   }
 
   if (tokens.userId !== payload.id) {
-    throw new Error("Invalid refresh token");
+    throw new AppError("Invalid refresh token", 401);
   }
 
   const match = await bcrypt.compare(refreshToken, tokens.tokenHash);
 
   if (!match) {
-    throw new Error("Invalid refresh token");
+    throw new AppError("Invalid refresh token", 401);
   }
 
   await prisma.refreshToken.update({

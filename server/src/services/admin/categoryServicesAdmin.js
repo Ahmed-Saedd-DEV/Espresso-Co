@@ -1,10 +1,11 @@
 const prisma = require('../../prisma/prismaClient');
+const AppError = require('../../utils/errors/AppError');
 
 exports.createCategory = async (categoryData) => {
     const { name } = categoryData;
 
     if (!name) {
-        throw new Error('Category name is required');
+        throw new AppError('Category name is required', 400);
     }
 
     const existingCategory = await prisma.category.findUnique({
@@ -12,7 +13,7 @@ exports.createCategory = async (categoryData) => {
     });
 
     if (existingCategory) {
-        throw new Error('Category already exists');
+        throw new AppError('Category already exists', 409);
     }
 
     const newCategory = await prisma.category.create({
@@ -32,7 +33,7 @@ exports.updateCategory = async (categoryId, categoryData) => {
     });
 
     if (!category) {
-        throw new Error('Category not found');
+        throw new AppError('Category not found', 404);
     }
 
     if (name) {
@@ -41,7 +42,7 @@ exports.updateCategory = async (categoryId, categoryData) => {
         });
 
         if (existingCategory && existingCategory.id !== Number(categoryId)) {
-            throw new Error('Category name already exists');
+            throw new AppError('Category name already exists', 409);
         }
     }
 
@@ -61,7 +62,7 @@ exports.deleteCategory = async (categoryId) => {
     });
 
     if (!category) {
-        throw new Error('Category not found');
+        throw new AppError('Category not found', 404);
     }
 
     // Check if category has products
@@ -70,7 +71,7 @@ exports.deleteCategory = async (categoryId) => {
     });
 
     if (productsCount > 0) {
-        throw new Error('Cannot delete category with associated products');
+        throw new AppError('Cannot delete category with associated products', 409);
     }
 
     await prisma.category.delete({

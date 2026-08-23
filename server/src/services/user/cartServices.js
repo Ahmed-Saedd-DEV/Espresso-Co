@@ -1,4 +1,5 @@
 const prisma = require("../../prisma/prismaClient");
+const AppError = require("../../utils/errors/AppError");
 
 const getCart = async (userId) => {
   return await prisma.cart.findUnique({
@@ -11,11 +12,11 @@ const validateQuantity = (quantity) => {
   const parsedQuantity = Number(quantity);
 
   if (!Number.isInteger(parsedQuantity)) {
-    throw new Error("Invalid quantity");
+    throw new AppError("Invalid quantity", 400);
   }
 
   if (parsedQuantity <= 0) {
-    throw new Error("Quantity must be greater than 0");
+    throw new AppError("Quantity must be greater than 0", 400);
   }
 
   return parsedQuantity;
@@ -25,7 +26,7 @@ const validateProductId = (productId) => {
   const parsedProductId = Number(productId);
 
   if (!Number.isInteger(parsedProductId) || parsedProductId <= 0) {
-    throw new Error("Invalid product ID");
+    throw new AppError("Invalid product ID", 400);
   }
 
   return parsedProductId;
@@ -47,7 +48,7 @@ const addToCart = async (userId, productId, quantity) => {
   });
 
   if (!product) {
-    throw new Error("Product not found");
+    throw new AppError("Product not found", 404);
   }
 
   const existingCartItem = await prisma.cartProduct.findUnique({
@@ -62,7 +63,7 @@ const addToCart = async (userId, productId, quantity) => {
   const nextQuantity = (existingCartItem?.quantity || 0) + parsedQuantity;
 
   if (nextQuantity > product.stock) {
-    throw new Error("Insufficient stock");
+    throw new AppError("Insufficient stock", 409);
   }
 
   return await prisma.cartProduct.upsert({
@@ -89,7 +90,7 @@ const updateCartItem = async (userId, productId, quantity) => {
   });
 
   if (!cart) {
-    throw new Error("Cart not found");
+    throw new AppError("Cart not found", 404);
   }
 
   const parsedProductId = validateProductId(productId);
@@ -105,7 +106,7 @@ const updateCartItem = async (userId, productId, quantity) => {
   });
 
   if (!existingCartItem) {
-    throw new Error("Cart item not found");
+    throw new AppError("Cart item not found", 404);
   }
 
   const product = await prisma.product.findUnique({
@@ -114,11 +115,11 @@ const updateCartItem = async (userId, productId, quantity) => {
   });
 
   if (!product) {
-    throw new Error("Product not found");
+    throw new AppError("Product not found", 404);
   }
 
   if (parsedQuantity > product.stock) {
-    throw new Error("Insufficient stock");
+    throw new AppError("Insufficient stock", 409);
   }
 
   return await prisma.cartProduct.update({
@@ -138,7 +139,7 @@ const removeFromCart = async (userId, productId) => {
   });
 
   if (!cart) {
-    throw new Error("Cart not found");
+    throw new AppError("Cart not found", 404);
   }
 
   const parsedProductId = validateProductId(productId);
@@ -153,7 +154,7 @@ const removeFromCart = async (userId, productId) => {
   });
 
   if (!existingCartItem) {
-    throw new Error("Cart item not found");
+    throw new AppError("Cart item not found", 404);
   }
 
   return await prisma.cartProduct.delete({

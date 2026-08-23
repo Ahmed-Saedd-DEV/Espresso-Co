@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const productService = require("../../services/admin/productServicesAdmin");
 
-exports.createProduct = async (req, res) => {
+exports.createProduct = async (req, res, next) => {
   try {
     const newProduct = await productService.createProduct(
       req.body,
@@ -10,11 +10,11 @@ exports.createProduct = async (req, res) => {
     );
     res.status(201).json(newProduct);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.updateProduct = async (req, res) => {
+exports.updateProduct = async (req, res, next) => {
   try {
     const updatedProduct = await productService.updateProduct(
       req.params.id,
@@ -23,20 +23,20 @@ exports.updateProduct = async (req, res) => {
     );
     res.json(updatedProduct);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
   try {
     await productService.deleteProduct(req.params.id, req.user?.id);
     res.status(204).send();
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    next(error);
   }
 };
 
-exports.createImageProduct = async (req, res) => {
+exports.createImageProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
 
@@ -73,18 +73,16 @@ exports.createImageProduct = async (req, res) => {
       throw error;
     }
   } catch (error) {
-    return res.status(400).json({
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-exports.deleteImageProduct = async (req, res) => {
+exports.deleteImageProduct = async (req, res, next) => {
   try {
     await productService.deleteImageProduct(req.params.imageId);
     res.status(204).send();
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
