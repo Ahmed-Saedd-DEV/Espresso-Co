@@ -57,10 +57,7 @@ app.use(cors(corsOptions));
 app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
-app.use(
-  "/uploads/products",
-  express.static("uploads/products"),
-);
+app.use("/uploads/products", express.static("uploads/products"));
 
 app.use("/auth", authRoutes);
 app.use("/products", productsRouters);

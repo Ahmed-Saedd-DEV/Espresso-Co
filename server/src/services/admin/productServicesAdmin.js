@@ -94,10 +94,7 @@ exports.deleteProduct = async (productId, userId) => {
 
       await fs.promises.unlink(imagePath);
     } catch (error) {
-      console.error(
-        `Failed to delete image file: ${image.url}`,
-        error.message,
-      );
+      console.error(`Failed to delete image file: ${image.url}`, error.message);
     }
   }
 
