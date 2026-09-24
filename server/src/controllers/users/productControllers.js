@@ -11,6 +11,8 @@ exports.getProducts = async (req, res, next) => {
       price,
       minPrice,
       maxPrice,
+      category,
+      categoryId,
       search: searchQuery,
     } = req.query;
 
@@ -29,6 +31,8 @@ exports.getProducts = async (req, res, next) => {
       price,
       minPrice,
       maxPrice,
+      category,
+      categoryId,
       search: searchQuery,
     });
 
@@ -48,10 +52,7 @@ exports.getProducts = async (req, res, next) => {
 
 exports.getProductById = async (req, res, next) => {
   try {
-    const product = await productService.getProductById(
-      req.params.id,
-      req.user.id,
-    );
+    const product = await productService.getProductById(req.params.id);
     res.json(product);
   } catch (error) {
     next(error);

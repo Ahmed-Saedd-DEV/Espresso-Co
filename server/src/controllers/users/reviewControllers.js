@@ -12,7 +12,15 @@ exports.createReview = async (req, res, next) => {
 
 exports.getReviews = async (req, res, next) => {
   try {
-    const { page, limit, sort, order, rating, search: searchQuery } = req.query;
+    const {
+      page,
+      limit,
+      sort,
+      order,
+      rating,
+      search: searchQuery,
+      productId,
+    } = req.query;
 
     const {
       reviews,
@@ -20,10 +28,15 @@ exports.getReviews = async (req, res, next) => {
       totalRecords,
       page: activePage,
       limit: activeLimit,
-    } = await reviewServices.getReviews(
-      { page, limit, sort, order, rating, search: searchQuery },
-      { userId: req.user.id },
-    );
+    } = await reviewServices.getReviews({
+      page,
+      limit,
+      sort,
+      order,
+      rating,
+      search: searchQuery,
+      productId,
+    });
 
     res.status(200).json({
       data: reviews,
@@ -34,6 +47,33 @@ exports.getReviews = async (req, res, next) => {
         totalRecords,
       },
     });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.updateReview = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const userId = req.user.id;
+    const data = req.body;
+
+    const updated = await reviewServices.updateReview(id, userId, data);
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+exports.deleteReview = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const userId = req.user.id;
+
+    await reviewServices.deleteReview(id, userId);
+    res.status(200).json({ message: "Review deleted successfully" });
   } catch (error) {
     console.error(error);
     next(error);

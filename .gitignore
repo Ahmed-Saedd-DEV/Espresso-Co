@@ -1,1 +1,46 @@
-PROJECT_DOCUMENTATION.md
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and runtime temp files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+tmp/
+temp/
+
+# Build, coverage, and generated output
+dist/
+build/
+coverage/
+.nyc_output/
+server/src/generated/
+
+# Runtime uploads
+server/uploads/*
+!server/uploads/.gitkeep
+!server/uploads/products/.gitkeep
+server/src/tmp/
+server/.env
+server/.env.*
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Tool-generated local assets
+public/assets/.aistudio/

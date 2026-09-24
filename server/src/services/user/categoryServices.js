@@ -18,12 +18,8 @@ exports.getCategories = async (
     categoryId,
     search: searchQuery,
   },
-  { userId },
+  _context = {},
 ) => {
-  if (!userId) {
-    throw new AppError("Authentication required", 401);
-  }
-
   const searchWhiteList = ["name"];
   const searchWhere = search.getSearch(searchQuery, searchWhiteList);
   const where = filter.getFiltered(
@@ -33,7 +29,7 @@ exports.getCategories = async (
       categoryId: categoryId !== undefined ? Number(categoryId) : undefined,
       ...searchWhere,
     },
-    { userId },
+    {},
     {
       price: {
         min: minPrice,

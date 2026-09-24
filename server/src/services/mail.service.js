@@ -1,11 +1,12 @@
 const transporter = require("../utils/email");
 
+const getClientUrl = () =>
+  (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, "");
+
 const sendVerificationEmail = async (email, token) => {
-  const verificationLink =
-    `${process.env.APP_URL}/auth/verify-email?token=${token}`;
+  const verificationLink = `${getClientUrl()}/verify-email?token=${encodeURIComponent(token)}`;
 
-
-  const info = await transporter.sendMail({
+  await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Verify your email",
@@ -18,13 +19,14 @@ const sendVerificationEmail = async (email, token) => {
       </a>
     `,
   });
-  console.log("Verification email sent: %s", verificationLink);
+
+  console.log(`Verification email sent to ${email}`);
 };
 
 const sendPasswordResetEmail = async (email, token) => {
-  const resetLink = `${process.env.APP_URL}/auth/reset-password?token=${token}`;
+  const resetLink = `${getClientUrl()}/reset-password?token=${encodeURIComponent(token)}`;
 
-  const info = await transporter.sendMail({
+  await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
     subject: "Reset your password",
@@ -37,7 +39,8 @@ const sendPasswordResetEmail = async (email, token) => {
       </a>
     `,
   });
-  console.log("Password reset email sent: %s", resetLink);
+
+  console.log(`Password reset email sent to ${email}`);
 };
 
 module.exports = {

@@ -40,6 +40,60 @@ const validateProductData = async (productData) => {
   }
 };
 
+exports.getAllProductsAdmin = async (queryParams = {}) => {
+  const page = Number(queryParams.page ?? 1);
+  const limit = Number(queryParams.limit ?? 10);
+  const search = queryParams.search?.trim();
+  const categoryId =
+    queryParams.categoryId !== undefined &&
+    queryParams.categoryId !== null &&
+    queryParams.categoryId !== ""
+      ? Number(queryParams.categoryId)
+      : undefined;
+
+  const safePage = Number.isFinite(page) && page > 0 ? page : 1;
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? limit : 10;
+  const skip = (safePage - 1) * safeLimit;
+
+  const where = {};
+
+  if (categoryId !== undefined && Number.isFinite(categoryId)) {
+    where.categoryId = categoryId;
+  }
+
+  if (search) {
+    where.name = {
+      contains: search,
+      mode: "insensitive",
+    };
+  }
+
+  const [products, total] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      skip,
+      take: safeLimit,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        category: true,
+        images: true,
+      },
+    }),
+    prisma.product.count({
+      where,
+    }),
+  ]);
+
+  return {
+    data: products,
+    total,
+    page: safePage,
+    limit: safeLimit,
+  };
+};
+
 exports.createProduct = async (productData, userId) => {
   const { userId: _, ...safeProductData } = productData || {};
   await validateProductData(safeProductData);
@@ -99,9 +153,26 @@ exports.deleteProduct = async (productId, userId) => {
     }
   }
 
-  await prisma.product.delete({
-    where: { id: Number(productId) },
-  });
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.cartProduct.deleteMany({
+        where: { productId: Number(productId) },
+      });
+
+      await tx.product.delete({
+        where: { id: Number(productId) },
+      });
+    });
+  } catch (error) {
+    if (error?.code === "P2003") {
+      throw new AppError(
+        "Unable to delete product due to existing references",
+        409,
+      );
+    }
+
+    throw error;
+  }
 
   await invalidateProductsCache();
 };
@@ -155,12 +226,36 @@ exports.createImageProduct = async (productId, imagePaths) => {
     throw new AppError("A product can have at most 5 images", 409);
   }
 
-  await prisma.image.createMany({
-    data: uniqueImagePaths.map((url) => ({
-      productId: Number(productId),
-      url,
-    })),
-  });
+  const safeImagePaths = uniqueImagePaths.map((url) => ({
+    url,
+    resolvedPath: getSafeProductImagePath(url),
+  }));
+
+  try {
+    await prisma.image.createMany({
+      data: safeImagePaths.map(({ url }) => ({
+        productId: Number(productId),
+        url,
+      })),
+    });
+  } catch (error) {
+    await Promise.all(
+      safeImagePaths.map(async ({ resolvedPath }) => {
+        try {
+          await fs.promises.unlink(resolvedPath);
+        } catch (unlinkError) {
+          if (unlinkError.code !== "ENOENT") {
+            console.error(
+              `Failed to cleanup uploaded image: ${resolvedPath}`,
+              unlinkError.message,
+            );
+          }
+        }
+      }),
+    );
+
+    throw error;
+  }
 
   const images = await prisma.image.findMany({
     where: {
@@ -171,15 +266,26 @@ exports.createImageProduct = async (productId, imagePaths) => {
   return images;
 };
 
-exports.deleteImageProduct = async (imageId) => {
+exports.deleteImageProduct = async (imageId, userId = null) => {
   const existingImage = await prisma.image.findUnique({
     where: {
       id: Number(imageId),
+    },
+    include: {
+      product: {
+        select: {
+          userId: true,
+        },
+      },
     },
   });
 
   if (!existingImage) {
     throw new AppError("Image not found", 404);
+  }
+
+  if (userId !== null && existingImage.product.userId !== Number(userId)) {
+    throw new AppError("Unauthorized", 403);
   }
 
   if (existingImage.url) {

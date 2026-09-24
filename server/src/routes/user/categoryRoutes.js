@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 const categoryControllers = require("../../controllers/users/categoryControllers");
-const authMiddleware = require("../../middleware/authMiddleware");
 const validate = require("../../middleware/validate");
 const {
   categoryQuerySchema,

@@ -12,9 +12,12 @@ const getProductsCacheKey = ({
   price,
   minPrice,
   maxPrice,
+  category,
+  categoryId,
   search,
 }) => {
-  return `products:v${version}:page=${page}:limit=${limit}:sort=${sort}:order=${order}:stock=${stock ?? "none"}:price=${price ?? "none"}:minPrice=${minPrice ?? "none"}:maxPrice=${maxPrice ?? "none"}:search=${search ?? "none"}`;
+  const categoryKey = category ?? categoryId ?? "none";
+  return `products:v${version}:page=${page}:limit=${limit}:sort=${sort}:order=${order}:stock=${stock ?? "none"}:price=${price ?? "none"}:minPrice=${minPrice ?? "none"}:maxPrice=${maxPrice ?? "none"}:category=${categoryKey}:search=${search ?? "none"}`;
 };
 
 const getProductsVersion = async () => {

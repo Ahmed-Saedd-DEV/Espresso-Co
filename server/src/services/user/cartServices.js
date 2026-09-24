@@ -4,7 +4,15 @@ const AppError = require("../../utils/errors/AppError");
 const getCart = async (userId) => {
   return await prisma.cart.findUnique({
     where: { userId: Number(userId) },
-    include: { items: true },
+    include: {
+      items: {
+        include: {
+          product: {
+            include: { images: true, category: true },
+          },
+        },
+      },
+    },
   });
 };
 

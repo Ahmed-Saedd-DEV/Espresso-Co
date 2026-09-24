@@ -5,5 +5,8 @@
     "dev": "npm --prefix server run dev",
     "start": "npm --prefix server run start",
     "studio": "npm --prefix server run studio"
+  },
+  "devDependencies": {
+    "jest": "^30.5.1"
   }
 }

@@ -10,6 +10,8 @@ const reviewRateLimiter = require("../../middleware/rateLimit/reviewRateLimiter"
 const {
   createReviewSchema,
   getReviewsQuerySchema,
+  updateReviewSchema,
+  deleteReviewSchema,
 } = require("../../validators/user/review.validator.js");
 
 router.post(
@@ -25,10 +27,24 @@ router.get(
   "/",
   normalizeIp,
   reviewRateLimiter,
-  authMiddleware,
-  requireVerifiedUser,
   validate(getReviewsQuerySchema),
   reviewControllers.getReviews,
+);
+
+router.patch(
+  "/:id",
+  authMiddleware,
+  requireVerifiedUser,
+  validate(updateReviewSchema),
+  reviewControllers.updateReview,
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  requireVerifiedUser,
+  validate(deleteReviewSchema),
+  reviewControllers.deleteReview,
 );
 
 module.exports = router;

@@ -102,6 +102,17 @@ const createOrder = async (orderData, userId) => {
 
     await orderUtils.updateDecreaseStock(mergedItems, tx);
 
+    const cart = await tx.cart.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+
+    if (cart) {
+      await tx.cartProduct.deleteMany({
+        where: { cartId: cart.id },
+      });
+    }
+
     return tx.order.findUnique({
       where: {
         id: order.id,

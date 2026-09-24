@@ -2,6 +2,14 @@ const resolveSortQuery = ({ sort, sortBy, order } = {}) => {
   const normalizedSort = sort || sortBy || "createdAt";
   const normalizedOrder = order || "asc";
 
+  if (typeof normalizedSort !== "string") {
+    throw new Error("Invalid sort field");
+  }
+
+  if (typeof normalizedOrder !== "string") {
+    throw new Error("Invalid order value");
+  }
+
   return {
     sort: normalizedSort,
     order: normalizedOrder,

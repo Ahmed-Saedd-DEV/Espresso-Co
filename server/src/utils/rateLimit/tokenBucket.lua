@@ -44,14 +44,9 @@ end
 
 tokens = tokens - 1
 
-redis.call(
-    "HSET",
-    key,
-    "tokens",
-    tokens,
-    "lastRefill",
-    lastRefill
-)
+-- Redis 3.x does not support variadic HSET field/value pairs.
+redis.call("HSET", key, "tokens", tokens)
+redis.call("HSET", key, "lastRefill", lastRefill)
 
 redis.call("EXPIRE", key, ttl)
 

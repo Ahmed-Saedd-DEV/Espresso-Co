@@ -1,4 +1,5 @@
 const prisma = require("../prisma/prismaClient");
+const AppError = require("../utils/errors/AppError");
 
 const checkStock = async (orderItems, tx = prisma) => {
   const productIds = [...new Set(orderItems.map((item) => item.productId))];
@@ -17,11 +18,14 @@ const checkStock = async (orderItems, tx = prisma) => {
     const product = productMap.get(item.productId);
 
     if (!product) {
-      throw new Error(`Product not found: ${item.productId}`);
+      throw new AppError(`Product not found: ${item.productId}`, 404);
     }
 
     if (product.stock < item.quantity) {
-      throw new Error(`Insufficient stock for product ${item.productId}`);
+      throw new AppError(
+        `Insufficient stock for product ${item.productId}`,
+        409,
+      );
     }
   });
 

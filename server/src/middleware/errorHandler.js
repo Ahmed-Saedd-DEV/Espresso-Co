@@ -1,6 +1,4 @@
-const {
-  PrismaClientKnownRequestError,
-} = require("@prisma/client/runtime/library");
+const { PrismaClientKnownRequestError } = require("@prisma/client");
 
 const handlePrismaError = (error) => {
   switch (error.code) {

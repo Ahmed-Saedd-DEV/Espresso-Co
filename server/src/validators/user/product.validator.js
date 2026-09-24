@@ -40,12 +40,27 @@ const productQuerySchema = z.object({
         .min(0, "Maximum price cannot be negative")
         .optional(),
 
+      category: z
+        .string()
+        .trim()
+        .min(1, "Category cannot be empty")
+        .max(100, "Category must not exceed 100 characters")
+        .optional(),
+
+      categoryId: z.coerce
+        .number()
+        .int("Category ID must be an integer")
+        .positive("Category ID must be greater than 0")
+        .optional(),
+
       search: z
         .string()
         .trim()
+        .min(1, "Search cannot be empty")
         .max(100, "Search must not exceed 100 characters")
         .optional(),
     })
+    .strict()
     .refine(
       (data) =>
         data.minPrice === undefined ||
@@ -59,12 +74,14 @@ const productQuerySchema = z.object({
 });
 
 const productIdSchema = z.object({
-  params: z.object({
-    id: z.coerce
-      .number()
-      .int("Product ID must be an integer")
-      .positive("Product ID must be greater than 0"),
-  }),
+  params: z
+    .object({
+      id: z.coerce
+        .number()
+        .int("Product ID must be an integer")
+        .positive("Product ID must be greater than 0"),
+    })
+    .strict(),
 });
 
 module.exports = {

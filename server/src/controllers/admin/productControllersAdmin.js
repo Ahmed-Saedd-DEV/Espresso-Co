@@ -1,6 +1,18 @@
 const fs = require("fs");
 const path = require("path");
 const productService = require("../../services/admin/productServicesAdmin");
+const {
+  getSafeProductImagePath,
+} = require("../../utils/fileUpload/productImagePath");
+
+exports.getAllProductsAdmin = async (req, res, next) => {
+  try {
+    const result = await productService.getAllProductsAdmin(req.query);
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.createProduct = async (req, res, next) => {
   try {
@@ -30,7 +42,7 @@ exports.updateProduct = async (req, res, next) => {
 exports.deleteProduct = async (req, res, next) => {
   try {
     await productService.deleteProduct(req.params.id, req.user?.id);
-    res.status(204).send();
+    res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     next(error);
   }
@@ -45,29 +57,31 @@ exports.createImageProduct = async (req, res, next) => {
     }
 
     const imagePaths = req.files.map((file) =>
-      path.posix.join("uploads", "products", file.filename)
+      path.posix.join("uploads", "products", file.filename),
     );
 
     try {
       const newImageProduct = await productService.createImageProduct(
         productId,
-        imagePaths
+        imagePaths,
       );
 
       return res.status(201).json(newImageProduct);
     } catch (error) {
-      // DB failed → delete uploaded files
       await Promise.all(
         req.files.map(async (file) => {
           try {
-            await fs.promises.unlink(file.path);
+            const safePath = getSafeProductImagePath(file.path);
+            await fs.promises.unlink(safePath);
           } catch (unlinkError) {
-            console.error(
-              `Failed to cleanup uploaded file: ${file.path}`,
-              unlinkError.message
-            );
+            if (unlinkError.code !== "ENOENT") {
+              console.error(
+                `Failed to cleanup uploaded file: ${file.path}`,
+                unlinkError.message,
+              );
+            }
           }
-        })
+        }),
       );
 
       throw error;
@@ -79,10 +93,9 @@ exports.createImageProduct = async (req, res, next) => {
 
 exports.deleteImageProduct = async (req, res, next) => {
   try {
-    await productService.deleteImageProduct(req.params.imageId);
+    await productService.deleteImageProduct(req.params.imageId, req.user?.id);
     res.status(204).send();
   } catch (error) {
     next(error);
   }
 };
-

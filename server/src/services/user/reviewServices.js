@@ -39,12 +39,17 @@ exports.createReview = async (reviewData, userId) => {
   });
 };
 
-exports.getReviews = async (
-  { page, limit, sort: sortField, order, rating, search: searchQuery },
-  { userId },
-) => {
-  if (!userId) {
-    throw new AppError("Authentication required", 401);
+exports.getReviews = async ({
+  page,
+  limit,
+  sort: sortField,
+  order,
+  rating,
+  search: searchQuery,
+  productId,
+}) => {
+  if (!productId) {
+    throw new AppError("productId is required", 400);
   }
 
   const searchWhiteList = ["comment"];
@@ -52,10 +57,11 @@ exports.getReviews = async (
 
   const where = filter.getFiltered(
     {
+      productId: Number(productId),
       rating: rating !== undefined ? Number(rating) : undefined,
       ...searchWhere,
     },
-    { userId },
+    {},
   );
   const totalRecords = await prisma.review.count({ where });
   const paginationData = pagination.getPagination(page, limit, totalRecords);
@@ -68,7 +74,9 @@ exports.getReviews = async (
   );
   const reviews = await prisma.review.findMany({
     where,
-    include: { product: true },
+    include: {
+      user: { select: { id: true, name: true } },
+    },
     skip: paginationData.skip,
     take: paginationData.take,
     orderBy: sorting,
@@ -81,4 +89,40 @@ exports.getReviews = async (
     page: paginationData.page,
     limit: paginationData.limit,
   };
+};
+
+exports.updateReview = async (id, userId, data) => {
+  const review = await prisma.review.findUnique({ where: { id: Number(id) } });
+  if (!review) {
+    throw new AppError("Review not found", 404);
+  }
+  if (review.userId !== Number(userId)) {
+    throw new AppError("You can only edit your own reviews", 403);
+  }
+
+  const payload = {};
+  if (data.rating !== undefined) payload.rating = Number(data.rating);
+  if (data.comment !== undefined)
+    payload.comment = data.comment?.trim() || null;
+
+  if (Object.keys(payload).length === 0) {
+    throw new AppError("No update fields provided", 400);
+  }
+
+  return await prisma.review.update({
+    where: { id: Number(id) },
+    data: payload,
+  });
+};
+
+exports.deleteReview = async (id, userId) => {
+  const review = await prisma.review.findUnique({ where: { id: Number(id) } });
+  if (!review) {
+    throw new AppError("Review not found", 404);
+  }
+  if (review.userId !== Number(userId)) {
+    throw new AppError("You can only delete your own reviews", 403);
+  }
+
+  return await prisma.review.delete({ where: { id: Number(id) } });
 };

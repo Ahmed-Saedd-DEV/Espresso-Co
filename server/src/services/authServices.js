@@ -12,9 +12,6 @@ const {
 } = require("./mail.service");
 const AppError = require("../utils/errors/AppError");
 
-const EMAIL_VERIFICATION_ERROR_MESSAGE =
-  "Invalid or expired verification token";
-
 const registerUser = async (userData) => {
   const { email, password, name } = userData;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -95,9 +92,11 @@ const forgotPassword = async (email) => {
   if (!user) {
     throw new AppError("User not found", 404);
   }
-  const passwordResetToken = await prisma.passwordResetToken.deleteMany({
+
+  await prisma.passwordResetToken.deleteMany({
     where: { userId: user.id },
   });
+
   const token = await createPasswordResetToken(user.id);
   await sendPasswordResetEmail(user.email, token);
   return {
@@ -246,7 +245,7 @@ const getProfile = async (userId) => {
 
   const user = await prisma.user.findUnique({
     where: { id: parsedUserId },
-    select: { name: true, email: true },
+    select: { id: true, name: true, email: true, role: true, isVerified: true },
   });
 
   if (!user) {

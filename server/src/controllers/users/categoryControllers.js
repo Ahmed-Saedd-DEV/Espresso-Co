@@ -33,7 +33,7 @@ exports.getCategories = async (req, res, next) => {
         categoryId,
         search: searchQuery,
       },
-      { userId: req.user.id },
+      {},
     );
     res.status(200).json({
       data: categories,

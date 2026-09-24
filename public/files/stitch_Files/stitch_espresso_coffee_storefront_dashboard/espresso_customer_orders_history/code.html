@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-tertiary": "#ffffff", "secondary-fixed-dim": "#c8c6c4", "on-primary-fixed-variant": "#51443e", "on-primary": "#ffffff", "surface-container-low": "#fff1e8", "surface-bright": "#fff8f5", "on-surface-variant": "#4e4540", "on-primary-fixed": "#231a14", "surface-container-highest": "#f1dfd2", "surface-variant": "#f1dfd2", "on-error": "#ffffff", "on-secondary-container": "#636361", "surface-dim": "#e9d7ca", "secondary": "#5e5e5c", "outline": "#807570", "surface": "#fff8f5", "primary": "#000000", "tertiary-fixed-dim": "#ffb77d", "error": "#ba1a1a", "tertiary": "#000000", "outline-variant": "#d1c4be", "on-tertiary-fixed-variant": "#6e3900", "on-secondary": "#ffffff", "background": "#fff8f5", "on-background": "#231a12", "primary-fixed-dim": "#d5c3ba", "secondary-fixed": "#e4e2df", "surface-container-high": "#f7e5d8", "tertiary-fixed": "#ffdcc3", "surface-container-lowest": "#ffffff", "inverse-surface": "#392e26", "inverse-on-surface": "#ffeee2", "on-error-container": "#93000a", "error-container": "#ffdad6", "on-surface": "#231a12", "on-secondary-fixed-variant": "#474745", "on-primary-container": "#908179", "on-secondary-fixed": "#1b1c1a", "secondary-container": "#e1dfdc", "tertiary-container": "#2f1500", "on-tertiary-fixed": "#2f1500", "inverse-primary": "#d5c3ba", "primary-container": "#231a14", "surface-container": "#fdebde", "on-tertiary-container": "#ba7334", "primary-fixed": "#f2dfd6", "surface-tint": "#695c55" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "3rem", "space-xl": "2.5rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "space-xs": "0.25rem", "gutter-mobile": "1rem", "space-md": "1rem", "margin-mobile": "1.25rem", "gutter": "1.5rem" }, "fontFamily": { "label-caps": [ "Plus Jakarta Sans" ], "headline-lg-mobile": [ "Playfair Display" ], "data-mono": [ "Plus Jakarta Sans" ], "label-ui": [ "Plus Jakarta Sans" ], "headline-sm": [ "Playfair Display" ], "body-lg": [ "Plus Jakarta Sans" ], "title-product": [ "Plus Jakarta Sans" ], "display-hero-mobile": [ "Playfair Display" ], "display-hero": [ "Playfair Display" ], "body-md": [ "Plus Jakarta Sans" ], "headline-lg": [ "Playfair Display" ], "body-sm": [ "Plus Jakarta Sans" ], "headline-md": [ "Playfair Display" ] }, "fontSize": { "label-caps": [ "11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" } ], "headline-lg-mobile": [ "28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "data-mono": [ "13px", { "lineHeight": "18px", "fontWeight": "500" } ], "label-ui": [ "13px", { "lineHeight": "16px", "fontWeight": "600" } ], "headline-sm": [ "20px", { "lineHeight": "26px", "fontWeight": "600" } ], "body-lg": [ "16px", { "lineHeight": "26px", "fontWeight": "400" } ], "title-product": [ "18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "display-hero-mobile": [ "38px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "display-hero": [ "56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" } ], "body-md": [ "15px", { "lineHeight": "22px", "fontWeight": "400" } ], "headline-lg": [ "36px", { "lineHeight": "44px", "letterSpacing": "-0.015em", "fontWeight": "600" } ], "body-sm": [ "13px", { "lineHeight": "18px", "fontWeight": "400" } ], "headline-md": [ "26px", { "lineHeight": "32px", "fontWeight": "500" } ] } } } }</script></head><body class="bg-surface text-on-surface font-body-md text-body-md"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-7xl mx-auto px-margin-mobile lg:px-margin flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="home" href="#"><img alt="Brand logo. - Primary color: #1c130e
+- Font: playfairDisplay
+- Mode: light
+- Roundness: rounded-md
+" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1W-xrxmLaVQ6vDVoiKO4ezKMDunZvQklS-psNP7k_wHfXUS6Jukht46SwksPzla2kUqH_tvZTQhyr04M_G4iTxRZoCoHLUyL89rutoeHhspOOEegfg-I-zsUdRKHJk2zw00XFoxOmqzupbqmcw1MVkxFT97YLisBhXTNbXRtFkwk_B6G_Zj4faMLsDO-AZ0m7piYlI8pTMEVB7vJh3IXvljSCEN3A-GSkDB62faNltOIxI2Ja3ZXziOqg"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Café &amp; Patisserie</span></a><nav class="hidden md:flex items-center gap-space-lg" data-active-classes="text-on-surface font-label-ui text-label-ui"><a class="font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-colors" data-path="home" href="#">Home</a><a class="font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-colors" data-path="shop" href="#">Shop</a><a class="font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-colors" data-path="categories" href="#">Categories</a></nav></div><div class="flex items-center gap-space-md"><button aria-label="Search catalogue" class="p-space-xs text-on-surface-variant hover:text-on-surface transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined">search</span></button><a aria-label="Customer account" class="p-space-xs text-on-surface-variant hover:text-on-surface transition-colors flex items-center justify-center" data-path="account" href="#"><span class="material-symbols-outlined">account_circle</span></a><a aria-label="Shopping Cart" class="relative p-space-xs text-on-surface-variant hover:text-on-surface transition-colors flex items-center justify-center" data-path="cart" href="#"><span class="material-symbols-outlined">shopping_bag</span><span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 font-label-caps text-label-caps rounded-full bg-primary text-on-primary">2</span></a><a class="ml-space-xs flex items-center" data-path="account" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1X_4xCQ_lgqfLHoPD16O4Zj6kHZmGCLy5VC97a1mbyCneMihLu3K3zryERKKQr0RslVz6-5mWZMeTD4EG_hG5QpEASGQWXkKZw7lPTAVOM8eiADtQxD5h-MLJq99CiVtMOFYMaUrGaAC0xqwNWCxgpBD0tajs2ow92dKq-pJIRgkXGbpRDC5BKB3EtDf4NbsuR5GKgxsqZkRaRFJbbdWGhJak3qL9dzddHMya6m2ATQXjTAwshJfT3oIA"/></a></div></div></header><main class="w-full pt-20 bg-surface"><div class="flex flex-col w-full">
+<div class="relative w-full overflow-hidden pb-space-xl">
+<div class="absolute -top-32 right-12 w-96 h-96 rounded-full bg-surface-container-high/60 blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute top-72 -left-20 w-80 h-80 rounded-full bg-surface-container-highest/40 blur-2xl pointer-events-none -z-10"></div>
+<div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin pt-space-lg flex flex-col gap-space-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md border-b-0 pb-space-xs">
+<div class="flex flex-col gap-space-xs max-w-2xl">
+<div class="flex items-center gap-space-sm text-on-surface-variant font-label-caps text-label-caps tracking-widest uppercase">
+<span>Atelier Account</span>
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-on-tertiary-container"></span>
+<span>Dispatch Dossier</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Your Atelier Orders</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+            Track and manage your freshly roasted single-origin batches and artisanal patisserie dispatch orders.
+          </p>
+</div>
+<div class="flex items-center gap-space-sm self-start md:self-auto">
+<a class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface font-label-ui text-label-ui hover:bg-surface-container transition-all shadow-sm" data-path="roastery-dispatch" href="#">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+<span>Dispatch Policy</span>
+</a>
+<button class="inline-flex items-center gap-space-xs px-space-md py-2.5 rounded-lg bg-surface-container-highest text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all" id="toggle-empty-demo" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+<span id="demo-toggle-label">Preview Empty State</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase">Active Roast In-Flight</span>
+<span class="material-symbols-outlined text-[20px] text-on-tertiary-container">multiple_airports</span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">2 Parcels</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Queueing roast</span>
+</div>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-primary h-full w-2/3 rounded-full"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase">Single-Origin Volume</span>
+<span class="material-symbols-outlined text-[20px]">coffee</span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">1,250g</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">This quarter</span>
+</div>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-on-tertiary-container h-full w-4/5 rounded-full"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase">Patisserie Batches</span>
+<span class="material-symbols-outlined text-[20px]">bakery_dining</span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">4 Bakes</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Handcrafted</span>
+</div>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-surface-tint h-full w-1/2 rounded-full"></div>
+</div>
+</div>
+<div class="bg-primary text-on-primary p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-primary/70">
+<span class="font-label-caps text-label-caps uppercase text-on-primary/80 tracking-wider">Atelier Reserve tier</span>
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed">workspace_premium</span>
+</div>
+<div class="mt-space-md">
+<span class="font-headline-md text-headline-md text-on-primary font-medium tracking-tight">Concierge Priority</span>
+<p class="font-body-sm text-body-sm text-on-primary/70 mt-1">24h cupping window reserved</p>
+</div>
+<span class="font-label-caps text-label-caps text-tertiary-fixed uppercase mt-space-xs">Private member</span>
+</div>
+</div>
+<div class="flex items-center justify-between gap-space-sm overflow-x-auto no-scrollbar pb-1">
+<div class="inline-flex items-center p-1 bg-surface-container-low rounded-xl gap-1" id="status-tabs">
+<button class="tab-pill px-4 py-2 rounded-lg font-label-ui text-label-ui bg-primary text-on-primary shadow-sm transition-all duration-200" data-filter="all">
+            All Orders <span class="ml-1 opacity-80">(5)</span>
+</button>
+<button class="tab-pill px-4 py-2 rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-all duration-200" data-filter="pending">
+            PENDING <span class="ml-1 opacity-60">(1)</span>
+</button>
+<button class="tab-pill px-4 py-2 rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-all duration-200" data-filter="processing">
+            PROCESSING <span class="ml-1 opacity-60">(1)</span>
+</button>
+<button class="tab-pill px-4 py-2 rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-all duration-200" data-filter="shipped">
+            SHIPPED <span class="ml-1 opacity-60">(1)</span>
+</button>
+<button class="tab-pill px-4 py-2 rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-all duration-200" data-filter="delivered">
+            DELIVERED <span class="ml-1 opacity-60">(1)</span>
+</button>
+<button class="tab-pill px-4 py-2 rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-all duration-200" data-filter="cancelled">
+            CANCELLED <span class="ml-1 opacity-60">(1)</span>
+</button>
+</div>
+<div class="hidden xl:flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm bg-surface-container-lowest px-space-md py-2 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">schedule</span>
+<span>Roast schedule: Tuesdays &amp; Thursdays</span>
+</div>
+</div>
+<div class="flex flex-col gap-space-md" id="orders-deck">
+<article class="order-row group bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm hover:shadow-md transition-all duration-300" data-status="pending">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-medium">#ESP-88219</span>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-caps text-label-caps uppercase bg-amber-100/70 text-amber-900">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
+                PENDING
+              </span>
+<span class="text-on-surface-variant font-data-mono text-data-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">event</span>
+                Today, 10:24 AM
+              </span>
+</div>
+<div class="flex items-center gap-space-lg">
+<div class="text-right">
+<span class="block font-label-caps text-label-caps uppercase text-on-surface-variant">Order Total</span>
+<span class="font-title-product text-title-product text-on-surface font-semibold">$66.50</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md grid grid-cols-1 md:grid-cols-12 gap-space-md items-center pt-space-md bg-surface-container-low/40 -mx-space-md -mb-space-md p-space-md md:-mx-space-lg md:-mb-space-lg md:p-space-lg rounded-b-xl">
+<div class="md:col-span-8 flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
+<div class="flex -space-x-3 overflow-hidden shrink-0">
+<img class="w-12 h-12 rounded-lg object-cover shadow-sm bg-surface-container" data-alt="Small pouch of Ethiopian Yirgacheffe single origin specialty coffee with an elegant craft label on a warm wooden surface in morning sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhKSIIFZigh6C491VJtD78dBcYol5TF-_8fc2BUX40KIvzgUso9HAUzALgqo29xtpJ-vLV4cS02L2XVrrrWOxgYM-RBYJlbRz1cxO-QDtoykgmvM-jc-FDW1CMTEY3ZOL3Zog2GNl8kUsh96-uBR8LS7ncLqhIbxh-dxLhamrShC4y1yF61lDrt8JfLDTx8G2WjEX9nr8mcQQXg_xJZz9kBdz3X-N1CAlyVWTAqVEr-tmIJQpnHH54"/>
+<img class="w-12 h-12 rounded-lg object-cover shadow-sm bg-surface-container" data-alt="Freshly baked dark caramelized French Madagascar vanilla canele resting on delicate baker linen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiCenSvJk5MVeAQmnkLziyB6UU-IjT3WIIqmFvc3XrBR4SJFTldQo5fxF1nv5Q1wGEnW6JMQRDABDtXgarVB9Z2Owq__HOO35Ya7dXmFss6tr1vn8yohvW8cbQIygawoX36fH5Bn62iKLt36JoY4EadTj2gj7s5vEkdms3_dkJpDL8KG8N9bZ-uVhG-Mh09ySINAW5GiXk0FN631k8jO5ezqF2e3Tj8-q5goxjizW4wJ2KdgnqpoLI"/>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-product text-title-product text-on-surface">2 items curated</span>
+<span class="text-on-surface-variant text-body-sm">• Batch Roast #441</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Yirgacheffe Reserve 250g × 2, Madagascar Canelé × 1
+                </p>
+<span class="font-data-mono text-data-mono text-on-tertiary-container mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+                  Awaiting master roaster confirmation (Cancel eligible for 45 mins)
+                </span>
+</div>
+</div>
+<div class="md:col-span-4 flex items-center justify-start md:justify-end gap-space-sm pt-space-xs md:pt-0">
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container-high text-error font-label-ui text-label-ui hover:bg-error-container hover:text-on-error-container transition-all" onclick="openCancelModal('ESP-88219')" type="button">
+                Cancel Order
+              </button>
+<a class="px-space-lg py-2.5 rounded-lg bg-primary text-on-primary font-label-ui text-label-ui hover:bg-primary-container hover:text-on-primary-container transition-all flex items-center gap-space-xs shadow-sm" data-path="order-details-88219" href="#">
+<span>View Order Details</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</article>
+<article class="order-row group bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm hover:shadow-md transition-all duration-300" data-status="processing">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-medium">#ESP-88102</span>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-caps text-label-caps uppercase bg-sky-100 text-sky-900">
+<span class="w-1.5 h-1.5 rounded-full bg-sky-600 mr-1.5"></span>
+                PROCESSING
+              </span>
+<span class="text-on-surface-variant font-data-mono text-data-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">event</span>
+                Oct 28, 2024
+              </span>
+</div>
+<div class="flex items-center gap-space-lg">
+<div class="text-right">
+<span class="block font-label-caps text-label-caps uppercase text-on-surface-variant">Order Total</span>
+<span class="font-title-product text-title-product text-on-surface font-semibold">$46.00</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md grid grid-cols-1 md:grid-cols-12 gap-space-md items-center pt-space-md bg-surface-container-low/40 -mx-space-md -mb-space-md p-space-md md:-mx-space-lg md:-mb-space-lg md:p-space-lg rounded-b-xl">
+<div class="md:col-span-8 flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
+<div class="shrink-0">
+<img class="w-12 h-12 rounded-lg object-cover shadow-sm bg-surface-container" data-alt="Artisanal minimalist roasted coffee bean packaging with typography stamped Cerro Azul Gesha on ivory textured cardstock" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-LgpLVebh-coXS-gKJUu7CZLg6DMnFHTRy-_qMQNXipgQ3NEosG9piS_5CBCmhF_lAsFGyJJkWzEmP9zW5117i1nvFrNEceA4rOnl04GxW4H9RnOROHg3GEiWo3bvhz1w8w_EXofKgHDfBVJrKx-M40z7gAdf60I7Mkb1tIqvq4ZhLXftfBZdslGyOBPeIL-wrmYzcvcl08chON6tkv8kvoAH7nqVoQXdAJ70IIPdCheW0_2TtkTI"/>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-product text-title-product text-on-surface">1 item curated</span>
+<span class="text-on-surface-variant text-body-sm">• High Elevation Roast</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Cerro Azul Gesha 250g × 1
+                </p>
+<span class="font-data-mono text-data-mono text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">heat</span>
+                  Currently in cupping and nitrogen degassing phase
+                </span>
+</div>
+</div>
+<div class="md:col-span-4 flex items-center justify-start md:justify-end gap-space-sm pt-space-xs md:pt-0">
+<a class="px-space-lg py-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all flex items-center gap-space-xs" data-path="order-details-88102" href="#">
+<span>View Details</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</article>
+<article class="order-row group bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm hover:shadow-md transition-all duration-300" data-status="shipped">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-medium">#ESP-87940</span>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-caps text-label-caps uppercase bg-purple-100 text-purple-900">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-600 mr-1.5"></span>
+                SHIPPED
+              </span>
+<span class="text-on-surface-variant font-data-mono text-data-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">event</span>
+                Oct 15, 2024
+              </span>
+</div>
+<div class="flex items-center gap-space-lg">
+<div class="text-right">
+<span class="block font-label-caps text-label-caps uppercase text-on-surface-variant">Order Total</span>
+<span class="font-title-product text-title-product text-on-surface font-semibold">$64.00</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md grid grid-cols-1 md:grid-cols-12 gap-space-md items-center pt-space-md bg-surface-container-low/40 -mx-space-md -mb-space-md p-space-md md:-mx-space-lg md:-mb-space-lg md:p-space-lg rounded-b-xl">
+<div class="md:col-span-8 flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
+<div class="flex -space-x-3 overflow-hidden shrink-0">
+<img class="w-12 h-12 rounded-lg object-cover shadow-sm bg-surface-container" data-alt="Handcrafted ceramic matte stoneware pourover coffee dripper on an ivory espresso bar counter" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRrbtapq9jFZKOCl99wrDbz6pT03rFkDUGqdt7eFenBkprwwYk6aBE_ZQRRzojBJf2dWIKdxfBXyqHmDEcSYZpR1B-pNhFI4NFv1hR5yTydi0llFBFLyUYTQ0WHtLDzHtNG-stv1eQKpwkqOh7_svDiZrmz0zZ1LU5Qn_-CcptnKI10do1ldSU5oKP2W4GYbRnZ5kr_-iyTn2YDJNLUd9h2HzqmRG5Eso7qaJqtMmPRPzFH7Rn1HXE"/>
+<img class="w-12 h-12 rounded-lg object-cover shadow-sm bg-surface-container" data-alt="Guatemalan San Marcos single harvest whole bean coffee packet with metallic stamp detail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHSZlubVkPJ7aXxNGLvk1jAPO0yQdQWp5b4oNeYke4N9gQwlrhUvUoal7EnCDQMKxMpW2F0Pkx4Q3g8gM8mDytwdUQzPPUg-hATlMLdtpGt-FPI8ZQg_uN0h0L9BFy4BoTlqMFZGYk7eVYetkLVZFgVvStdxH3UNv5vYrcCNjr9N7URm4xlvLY7grRgPk5aZyFoVi9I3GnGUwN9qNqzSLm7XngFGQKwCFjlsCBeK6oxTJLU8592CWg"/>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-product text-title-product text-on-surface">2 items curated</span>
+<span class="text-on-surface-variant text-body-sm">• Atelier Courier</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Artisan Ceramic Dripper, San Marcos Drip
+                </p>
+<span class="font-data-mono text-data-mono text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">local_shipping</span>
+                  Tracking ID: EXP-994102-FR · In transit via Roastery Express
+                </span>
+</div>
+</div>
+<div class="md:col-span-4 flex items-center justify-start md:justify-end gap-space-sm pt-space-xs md:pt-0">
+<a class="px-space-lg py-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all flex items-center gap-space-xs" data-path="order-details-87940" href="#">
+<span>View Details</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</article>
+<article class="order-row group bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm hover:shadow-md transition-all duration-300" data-status="delivered">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-medium">#ESP-87422</span>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-caps text-label-caps uppercase bg-emerald-100 text-emerald-900">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+                DELIVERED
+              </span>
+<span class="text-on-surface-variant font-data-mono text-data-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">event</span>
+                Sep 30, 2024
+              </span>
+</div>
+<div class="flex items-center gap-space-lg">
+<div class="text-right">
+<span class="block font-label-caps text-label-caps uppercase text-on-surface-variant">Order Total</span>
+<span class="font-title-product text-title-product text-on-surface font-semibold">$42.00</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md grid grid-cols-1 md:grid-cols-12 gap-space-md items-center pt-space-md bg-surface-container-low/40 -mx-space-md -mb-space-md p-space-md md:-mx-space-lg md:-mb-space-lg md:p-space-lg rounded-b-xl">
+<div class="md:col-span-7 flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
+<div class="flex -space-x-3 overflow-hidden shrink-0">
+<img class="w-12 h-12 rounded-lg object-cover shadow-sm bg-surface-container" data-alt="Milano dark espresso roast bag with dark chocolate tones and gold foil label typography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtm1BJM_tZFLTObjQScaF1Eqhi8vmY9l7VpQ8Of51X37ooNXrSMwAJ0BuTuyGmoqCTsInW8mk-ustWtcsx4V5yI1Z7CKAy1v1CzWp37oI3FYLHgiSrJsqswTHdcwSFhrzhHvb1MVTbbCw-hcmAj6_GIkBS2HnF_KZawc-E6gPqOgyNJsALECzJacPFcBuAu2jA9gALN5Q3QI1SPLz8RNYEiw_a6u-RafN9PTmSeFC5WPdjAGiFd7dD"/>
+<img class="w-12 h-12 rounded-lg object-cover shadow-sm bg-surface-container" data-alt="Luxury box of Piedmont roasted hazelnut chocolate bonbons tied with silk charcoal ribbon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOdHm9zFnrDxI0eiAnDxIWSYg0CJxGKnSE5AtWaa5IkLNhEGPr7kcxS5gH2ZjtSuXxeMlTY8Rm_zWgeAOUDb7rMTVPLdpV2QQDIFwq-5P9OpL9lUtofr9Ke87iXtJISn3lpfH0VwN664SHG5qguhIy_fkajP5hpsjv4NNObkZ0SWiHG6KSusvMJgbzD01wWETjk5E-lEuTlal4wKI4jgTY00MmKvW317jAxgkGq9ZpFPfDPCKxIWHw"/>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-product text-title-product text-on-surface">3 items curated</span>
+<span class="text-on-surface-variant text-body-sm">• Completed</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Milano Dark Roast, Piedmont Hazelnut Bonbons
+                </p>
+<span class="font-data-mono text-data-mono text-emerald-800 mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  Delivered safely to concierge desk
+                </span>
+</div>
+</div>
+<div class="md:col-span-5 flex items-center justify-start md:justify-end gap-space-sm pt-space-xs md:pt-0">
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container-highest text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all flex items-center gap-space-xs" type="button">
+<span class="material-symbols-outlined text-[16px] text-on-tertiary-container">rate_review</span>
+<span>Write Review</span>
+</button>
+<a class="px-space-md py-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all flex items-center gap-space-xs" data-path="order-details-87422" href="#">
+<span>View Details</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</article>
+<article class="order-row group bg-surface-container-lowest/80 rounded-xl p-space-md md:p-space-lg shadow-sm opacity-80 hover:opacity-100 transition-all duration-300" data-status="cancelled">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface/70 line-through tracking-tight font-medium">#ESP-86910</span>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full font-label-caps text-label-caps uppercase bg-secondary-container text-on-secondary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1.5"></span>
+                CANCELLED
+              </span>
+<span class="text-on-surface-variant font-data-mono text-data-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">event</span>
+                Sep 12, 2024
+              </span>
+</div>
+<div class="flex items-center gap-space-lg">
+<div class="text-right">
+<span class="block font-label-caps text-label-caps uppercase text-on-surface-variant">Refunded Total</span>
+<span class="font-title-product text-title-product text-on-surface/70 line-through font-semibold">$26.00</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md grid grid-cols-1 md:grid-cols-12 gap-space-md items-center pt-space-md bg-surface-container-low/30 -mx-space-md -mb-space-md p-space-md md:-mx-space-lg md:-mb-space-lg md:p-space-lg rounded-b-xl">
+<div class="md:col-span-8 flex flex-col sm:flex-row items-start sm:items-center gap-space-md">
+<div class="shrink-0 grayscale">
+<img class="w-12 h-12 rounded-lg object-cover shadow-sm bg-surface-container" data-alt="Amber glass bottle with cold brew coffee concentrate elixir on a marble kitchen surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQJtwY_s-eyWis3gO2c5-KCK1KPW0W-1jzwTRWPUs_JwspACrY7YysLHjSQ9PvnJ0IbvEO320Wx67B1NEph2KRXqRpg6bxDxpeq_-dWuWMMbO0j3RLs35wFURHUgePtXWpy59zdvuJv-WiVoa9J-Tc5fkDp2LS2GbD0de-GxRWw5eqOeUfeFuqWnGM1YsdzWCk-gTT2COx3_PIR-OEUCITwwyDTV6xBnG-CmHXgnRXKh0xj28cpEgQ"/>
+</div>
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-product text-title-product text-on-surface/70">1 item</span>
+<span class="text-on-surface-variant text-body-sm">• Full refund settled</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                  Huila Cold Drip Elixir
+                </p>
+<span class="font-data-mono text-data-mono text-on-surface-variant mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cancel</span>
+                  Cancelled per client correspondence · Funds restored
+                </span>
+</div>
+</div>
+<div class="md:col-span-4 flex items-center justify-start md:justify-end gap-space-sm pt-space-xs md:pt-0">
+<a class="px-space-lg py-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all flex items-center gap-space-xs" data-path="order-details-86910" href="#">
+<span>View Details</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</article>
+</div>
+<div class="hidden flex-col items-center justify-center text-center p-space-xl bg-surface-container-lowest rounded-2xl shadow-sm my-space-sm" id="empty-state-view">
+<div class="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center text-on-tertiary-container mb-space-md">
+<span class="material-symbols-outlined text-4xl">coffee_maker</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Empty Dossier</span>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-space-xs">No orders placed yet</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mt-space-xs mb-space-lg">
+          Explore the roastery catalog to sample micro-lot coffees and patisserie confections prepared fresh daily.
+        </p>
+<a class="px-space-xl py-3.5 rounded-lg bg-primary text-on-primary font-label-ui text-label-ui hover:bg-primary-container hover:text-on-primary-container transition-all shadow-md flex items-center gap-space-xs" data-path="shop" href="#">
+<span class="material-symbols-outlined text-[18px]">storefront</span>
+<span>Explore Roastery Catalog</span>
+</a>
+</div>
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-md pb-space-lg" id="pagination-controls">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-data-mono">
+          Showing <span class="font-semibold text-on-surface">1–5</span> of <span class="font-semibold text-on-surface">5</span> orders
+        </span>
+<div class="inline-flex items-center gap-space-xs bg-surface-container-lowest p-1.5 rounded-xl shadow-sm">
+<button class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant opacity-40 cursor-not-allowed" disabled="" type="button">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-9 h-9 rounded-lg font-data-mono text-data-mono bg-primary text-on-primary font-semibold" type="button">1</button>
+<button class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant opacity-40 cursor-not-allowed" disabled="" type="button">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="p-space-lg rounded-2xl bg-surface-container-high/60 flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">support_agent</span>
+</div>
+<div>
+<h4 class="font-title-product text-title-product text-on-surface font-semibold">Need special assistance with your shipment?</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Our Milanese Roastery sommelier is available for custom roast dates or batch enquiries.</p>
+</div>
+</div>
+<a class="shrink-0 px-space-lg py-2.5 rounded-lg bg-surface-container-lowest text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all shadow-sm flex items-center gap-space-xs" data-path="contact" href="#">
+<span>Message Sommelier</span>
+<span class="material-symbols-outlined text-[16px]">arrow_outward</span>
+</a>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-inverse-surface/60 backdrop-blur-sm transition-opacity duration-300" id="cancel-modal">
+<div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-space-xl shadow-2xl relative">
+<div class="w-12 h-12 rounded-full bg-error-container text-on-error-container flex items-center justify-center mb-space-md">
+<span class="material-symbols-outlined text-2xl">warning</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-error tracking-wider">Cancellation Request</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Cancel Order <span id="modal-order-id">#ESP-88219</span>?</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-space-xs">
+        This order is currently PENDING and has not entered our drum roaster. If you cancel, your payment authorization of <span class="font-semibold text-on-surface">$66.50</span> will be voided immediately.
+      </p>
+<div class="mt-space-md p-space-sm bg-surface-container-low rounded-lg text-on-surface-variant font-body-sm text-body-sm flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-on-tertiary-container shrink-0 mt-0.5">info</span>
+<span>Orders that move into PROCESSING cannot be undone due to micro-batch single origin preparation.</span>
+</div>
+<div class="mt-space-lg flex items-center justify-end gap-space-sm">
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all" onclick="closeCancelModal()" type="button">
+          Retain Order
+        </button>
+<button class="px-space-lg py-2.5 rounded-lg bg-error text-on-error font-label-ui text-label-ui hover:opacity-90 transition-all shadow-sm" onclick="confirmCancelOrder()" type="button">
+          Confirm Cancellation
+        </button>
+</div>
+</div>
+</div>
+<script>
+    const tabButtons = document.querySelectorAll('#status-tabs button');
+    const orderRows = document.querySelectorAll('.order-row');
+    const emptyStateView = document.getElementById('empty-state-view');
+    const ordersDeck = document.getElementById('orders-deck');
+    const paginationControls = document.getElementById('pagination-controls');
+    const demoToggleBtn = document.getElementById('toggle-empty-demo');
+    const demoToggleLabel = document.getElementById('demo-toggle-label');
+    const cancelModal = document.getElementById('cancel-modal');
+    const modalOrderId = document.getElementById('modal-order-id');
+
+    let isDemoEmpty = false;
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (isDemoEmpty) return;
+        
+        tabButtons.forEach(btn => {
+          btn.className = 'tab-pill px-4 py-2 rounded-lg font-label-ui text-label-ui text-on-surface-variant hover:text-on-surface transition-all duration-200';
+        });
+        button.className = 'tab-pill px-4 py-2 rounded-lg font-label-ui text-label-ui bg-primary text-on-primary shadow-sm transition-all duration-200';
+
+        const filter = button.getAttribute('data-filter');
+
+        let visibleCount = 0;
+        orderRows.forEach(row => {
+          const rowStatus = row.getAttribute('data-status');
+          if (filter === 'all' || rowStatus === filter) {
+            row.style.display = 'block';
+            visibleCount++;
+          } else {
+            row.style.display = 'none';
+          }
+        });
+
+        if (visibleCount === 0) {
+          emptyStateView.classList.remove('hidden');
+          emptyStateView.classList.add('flex');
+          paginationControls.classList.add('hidden');
+        } else {
+          emptyStateView.classList.add('hidden');
+          emptyStateView.classList.remove('flex');
+          paginationControls.classList.remove('hidden');
+        }
+      });
+    });
+
+    demoToggleBtn.addEventListener('click', () => {
+      isDemoEmpty = !isDemoEmpty;
+      if (isDemoEmpty) {
+        ordersDeck.classList.add('hidden');
+        paginationControls.classList.add('hidden');
+        emptyStateView.classList.remove('hidden');
+        emptyStateView.classList.add('flex');
+        demoToggleLabel.textContent = 'Restore Active Orders';
+      } else {
+        ordersDeck.classList.remove('hidden');
+        paginationControls.classList.remove('hidden');
+        emptyStateView.classList.add('hidden');
+        emptyStateView.classList.remove('flex');
+        demoToggleLabel.textContent = 'Preview Empty State';
+        
+        const activeTab = document.querySelector('#status-tabs button.bg-primary');
+        if (activeTab) {
+          activeTab.click();
+        }
+      }
+    });
+
+    function openCancelModal(orderId) {
+      if (modalOrderId) {
+        modalOrderId.textContent = '#' + orderId;
+      }
+      cancelModal.classList.remove('hidden');
+    }
+
+    function closeCancelModal() {
+      cancelModal.classList.add('hidden');
+    }
+
+    function confirmCancelOrder() {
+      const order1 = document.querySelector('article[data-status="pending"]');
+      if (order1) {
+        order1.setAttribute('data-status', 'cancelled');
+        order1.classList.add('opacity-80');
+        const badge = order1.querySelector('.bg-amber-100\\/70');
+        if (badge) {
+          badge.className = 'inline-flex items-center px-2.5 py-1 rounded-full font-label-caps text-label-caps uppercase bg-secondary-container text-on-secondary-container';
+          badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1.5"></span>CANCELLED';
+        }
+        const actionsArea = order1.querySelector('.md\\:col-span-4');
+        if (actionsArea) {
+          actionsArea.innerHTML = '<a href="#" class="px-space-lg py-2.5 rounded-lg bg-surface-container-high text-on-surface font-label-ui text-label-ui hover:bg-surface-dim transition-all flex items-center gap-space-xs"><span>View Details</span><span class="material-symbols-outlined text-[16px]">chevron_right</span></a>';
+        }
+      }
+      closeCancelModal();
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-low mt-space-xl"><div class="max-w-7xl mx-auto px-margin-mobile lg:px-margin py-space-xl"><div class="grid grid-cols-1 md:grid-cols-12 gap-gutter pb-space-xl"><div class="md:col-span-5 flex flex-col gap-space-md"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Editorial Dispatch</span><h3 class="font-headline-md text-headline-md text-on-surface">Roastery &amp; Atelier Gazette</h3><p class="font-body-sm text-body-sm text-on-surface-variant max-w-sm">Curated single-origin release dispatches, seasonal patisserie collections, and harvesting diaries from our partner estates.</p><form class="flex items-center max-w-md mt-space-xs gap-space-xs"><input class="h-11 flex-1 px-space-md bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg outline-none placeholder:text-on-surface-variant/60 focus:ring-1 focus:ring-primary" placeholder="Enter your correspondence email" type="email"/><button class="h-11 px-space-lg bg-primary text-on-primary font-label-ui text-label-ui rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-all flex items-center gap-space-xs" type="button">Subscribe</button></form></div><div class="md:col-span-4 flex flex-col gap-space-md"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Roastery &amp; Boutiques</span><div class="flex flex-col gap-space-sm font-body-sm text-body-sm text-on-surface"><div class="flex flex-col"><span class="font-title-product text-title-product text-on-surface">Milano</span><span class="text-on-surface-variant">Via Monte Napoleone 18 · Atelier &amp; Espresso Laboratory</span></div><div class="flex flex-col"><span class="font-title-product text-title-product text-on-surface">Paris</span><span class="text-on-surface-variant">Rue de Grenelle 74 · Pâtisserie &amp; Cupping Salon</span></div><div class="flex flex-col"><span class="font-title-product text-title-product text-on-surface">Tokyo</span><span class="text-on-surface-variant">Ginza 6-Chome · Micro-Roastery &amp; Tea Counter</span></div></div></div><div class="md:col-span-3 flex flex-col gap-space-md"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Client Care</span><nav class="flex flex-col gap-space-sm" data-active-classes="text-on-surface font-label-ui text-label-ui"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="shipping-returns" href="#">Complimentary Logistics &amp; Dispatch</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="brew-guides" href="#">Atelier Extraction &amp; Brew Guides</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="corporate-gifting" href="#">Private Concierge &amp; Gifting</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="contact" href="#">Contact Sommelier</a></nav></div></div><div class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-md text-on-surface-variant font-label-caps text-label-caps uppercase"><span>© 2025 Artisan Roasters &amp; Confiseurs. All rights reserved.</span><div class="flex items-center gap-space-md"><a class="hover:text-on-surface transition-colors" data-path="privacy" href="#">Privacy Statement</a><a class="hover:text-on-surface transition-colors" data-path="terms" href="#">Terms of Provision</a></div></div></div></footer></body></html>

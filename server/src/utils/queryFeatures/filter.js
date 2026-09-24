@@ -21,7 +21,9 @@ const getFiltered = (filters = {}, baseWhere = {}, ranges = {}) => {
     }
 
     if (Object.keys(rangeFilter).length > 0) {
-      where[field] = rangeFilter;
+      if (where[field] === undefined) {
+        where[field] = rangeFilter;
+      }
     }
   }
 

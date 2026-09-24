@@ -19,17 +19,26 @@ exports.getProducts = async ({
   price,
   minPrice,
   maxPrice,
+  category,
+  categoryId,
   search: searchQuery,
 }) => {
   const searchWhiteList = ["name", "description"];
 
   const searchWhere = search.getSearch(searchQuery, searchWhiteList);
+  const categoryFilter =
+    categoryId !== undefined
+      ? { category: { id: Number(categoryId) } }
+      : category
+        ? { category: { name: category } }
+        : {};
 
   const where = filter.getFiltered(
     {
       stock: stock !== undefined ? Number(stock) : undefined,
       price: price !== undefined ? Number(price) : undefined,
       ...searchWhere,
+      ...categoryFilter,
     },
     {},
     {
@@ -65,19 +74,16 @@ exports.getProducts = async ({
     price,
     minPrice,
     maxPrice,
+    category,
+    categoryId,
     search: searchQuery,
   });
-
-  console.log("CACHE KEY:", cacheKey);
 
   const cachedProducts = await redisClient.get(cacheKey);
 
   if (cachedProducts) {
-    console.log("CACHE HIT");
     return JSON.parse(cachedProducts);
   }
-
-  console.log("CACHE MISS");
 
   // 2. Redis miss → query database
   const totalRecords = await prisma.product.count({

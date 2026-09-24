@@ -1,7 +1,18 @@
-node_modules
+# Dependencies
+node_modules/
+
 # Keep environment variables out of version control
 .env
+.env.*
+!.env.example
 
-/src/generated/prisma
+# Generated Prisma client output
+/src/generated/
 
-testTokenBucket.js
+# Runtime files
+/src/tmp/
+/uploads/*
+!/uploads/.gitkeep
+!/uploads/products/
+!/uploads/products/.gitkeep
+*.log

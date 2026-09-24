@@ -11,12 +11,14 @@ const createCategorySchema = z.object({
 });
 
 const updateCategorySchema = z.object({
-  params: z.object({
-    id: z.coerce
-      .number()
-      .int("Category ID must be an integer")
-      .positive("Category ID must be greater than 0"),
-  }),
+  params: z
+    .object({
+      id: z.coerce
+        .number()
+        .int("Category ID must be an integer")
+        .positive("Category ID must be greater than 0"),
+    })
+    .strict(),
 
   body: z
     .object({
@@ -29,12 +31,14 @@ const updateCategorySchema = z.object({
 });
 
 const categoryIdSchema = z.object({
-  params: z.object({
-    id: z.coerce
-      .number()
-      .int("Category ID must be an integer")
-      .positive("Category ID must be greater than 0"),
-  }),
+  params: z
+    .object({
+      id: z.coerce
+        .number()
+        .int("Category ID must be an integer")
+        .positive("Category ID must be greater than 0"),
+    })
+    .strict(),
 });
 
 module.exports = {
